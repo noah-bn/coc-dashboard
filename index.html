@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropellerPerps — War Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Russo+One&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#201F1D;
+  --surface:#2B2A27;
+  --surface-wood:#332821;
+  --gold:#F0B400; --gold-rgb:240,180,0;
+  --gold-bright:#FCD848;
+  --accent:#CC1818; --accent-rgb:204,24,24;
+  --secondary:#5B9C3D; --secondary-rgb:91,156,61;
+  --ember:#E48400; --ember-rgb:228,132,0;
+  --text:#F0E4CC;
+  --text-muted:#A89C82;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Rajdhani',sans-serif;
+  min-height:100vh;
+  position:relative;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  opacity:.05;
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><defs><g id="sw"><polygon points="0,-13 3.2,4 -3.2,4"/><rect x="-6.4" y="3" width="12.8" height="2.4"/><rect x="-1.5" y="5.4" width="3" height="6.5"/></g></defs><g fill="%23F0B400"><use href="%23sw" transform="translate(45,45) rotate(45) scale(1.7)"/><use href="%23sw" transform="translate(45,45) rotate(-45) scale(1.7)"/><use href="%23sw" transform="translate(135,135) rotate(45) scale(1.7)"/><use href="%23sw" transform="translate(135,135) rotate(-45) scale(1.7)"/></g></svg>');
+  background-size:180px 180px;
+}
+h1,h2,h3{margin:0;}
+button{font-family:inherit;}
+
+.textured{background-image:url('assets/noise.png');background-size:220px 220px;background-blend-mode:soft-light;}
+
+/* Display type — CoC-style outlined/shadowed headline treatment */
+.clan-name,.countdown,.panel h2,.team-name,.team-stars,.slide-name,.stat-block .num,.vs-mark span{
+  font-family:'Bangers',cursive;
+  letter-spacing:1px;
+  text-shadow:2px 2px 0 rgba(0,0,0,.55), 0 3px 8px rgba(0,0,0,.35);
+  -webkit-text-stroke:0.4px rgba(0,0,0,.35);
+}
+
+.icon{display:inline-flex;align-items:center;justify-content:center;}
+.icon svg{width:1em;height:1em;}
+
+.wrap{max-width:1760px;margin:0 auto;padding:24px 32px 130px;}
+
+/* Top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);padding:14px 24px;margin-bottom:20px;gap:16px;flex-wrap:wrap;}
+.topbar-side{display:flex;align-items:center;gap:12px;flex:1;min-width:180px;}
+.topbar-right{justify-content:flex-end;}
+.topbar-center{display:flex;align-items:center;gap:18px;justify-content:center;flex:1.2;min-width:260px;}
+.clan-name{font-size:19px;}
+.war-state{font-family:'Russo One';font-size:12.5px;letter-spacing:.5px;padding:8px 16px;border-radius:3px;background:rgba(var(--accent-rgb),0.14);border:1px solid rgba(var(--accent-rgb),0.5);color:#ff9c86;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.countdown{font-size:25px;color:var(--gold);font-variant-numeric:tabular-nums;transition:color .3s ease;}
+.countdown.urgent{color:var(--accent);animation:blink 1s step-start infinite;}
+.clan-tag{display:flex;align-items:center;font-size:12px;letter-spacing:.4px;padding:7px 14px;border-radius:3px;background:rgba(255,255,255,0.03);color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+/* Clash / VS panel */
+.clash-panel{position:relative;display:flex;overflow:hidden;min-height:210px;margin-bottom:20px;background:var(--surface);}
+.clash-half{flex:0 0 auto;position:relative;z-index:0;padding:22px 40px;display:flex;flex-direction:column;justify-content:space-between;transition:flex-basis 1s cubic-bezier(.2,.7,.3,1);}
+.clash-half.us{clip-path:polygon(0 0,100% 0,calc(100% - 55px) 14%,calc(100% - 15px) 28%,calc(100% - 60px) 42%,calc(100% - 20px) 56%,calc(100% - 65px) 70%,calc(100% - 25px) 85%,calc(100% - 70px) 100%,0 100%);background:rgba(var(--gold-rgb),0.10);margin-right:-46px;padding-right:120px;}
+.clash-half.them{clip-path:polygon(70px 0%,100% 0%,100% 100%,0% 100%,55px 86%,15px 72%,60px 58%,20px 44%,65px 30%,25px 15%);background:rgba(240,228,204,0.05);padding-left:120px;}
+.clash-half.us.leading{background:rgba(var(--gold-rgb),0.22);}
+.clash-half.them.leading{background:rgba(var(--accent-rgb),0.18);}
+.clash-seam{position:absolute;top:50%;z-index:5;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;pointer-events:none;transition:left 1s cubic-bezier(.2,.7,.3,1);}
+.seam-sword{position:absolute;left:50%;top:50%;width:52px;height:auto;z-index:2;transition:transform 1s cubic-bezier(.2,.7,.3,1);filter:drop-shadow(2px 3px 0 rgba(0,0,0,.5));}
+.vs-mark{position:relative;width:58px;height:58px;z-index:3;transform:translateX(36px);}
+.vs-mark span{position:absolute;font-size:32px;color:var(--gold);line-height:1;}
+.vs-mark .vs-v{top:-2px;left:-4px;}
+.vs-mark .vs-s{top:22px;left:22px;}
+.tag{font-size:10px;background:rgba(var(--gold-rgb),0.18);color:var(--gold);padding:3px 8px;border-radius:3px;letter-spacing:.5px;font-family:'Rajdhani';-webkit-text-stroke:0;text-shadow:none;}
+.team-name{font-size:23px;display:flex;align-items:center;gap:8px;}
+.team-stars{font-size:30px;color:var(--gold);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px;}
+.team-stars img{width:24px;height:24px;}
+.team-stars small{font-size:16px;color:var(--text-muted);font-family:'Rajdhani';font-weight:600;-webkit-text-stroke:0;text-shadow:none;}
+.team-meta{display:flex;justify-content:space-between;font-size:16px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums;max-width:300px;}
+.team-meta span{display:flex;align-items:center;gap:7px;}
+.team-meta img{width:auto;height:21px;object-fit:contain;}
+
+/* Layout */
+.main-grid{display:grid;grid-template-columns:1.85fr 1fr;gap:24px;align-items:start;}
+.sidebar{display:flex;flex-direction:column;gap:24px;}
+.panel{position:relative;overflow:hidden;z-index:0;background:var(--surface);padding:22px;}
+.panel-watermark{position:absolute;z-index:-1;pointer-events:none;color:var(--gold);}
+.panel-bg-art{position:absolute;z-index:-1;pointer-events:none;object-fit:contain;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;}
+.panel h2{font-size:16px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px;}
+.panel-sub{font-size:13px;color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap;}
+
+/* War board — card grid */
+.watermark-swords{right:6px;bottom:6px;width:120px;height:120px;opacity:.07;filter:grayscale(1);}
+.watermark-swords img{position:absolute;width:100%;}
+.watermark-swords img:first-child{transform:rotate(38deg);}
+.watermark-swords img:last-child{transform:rotate(-38deg) scaleX(-1);}
+.board-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.member-card{position:relative;background:var(--surface);padding:16px 14px 14px;display:flex;flex-direction:column;gap:12px;border-left:3px solid rgba(255,255,255,0.08);transition:transform .2s ease, background .2s ease;}
+.member-card:hover{transform:translateY(-2px);background:rgba(var(--gold-rgb),0.05);}
+.member-card.complete{border-left-color:rgba(var(--secondary-rgb),.6);}
+.member-card.missed{opacity:.55;border-left-color:rgba(var(--accent-rgb),.6);}
+.member-card.attacking{border-left-color:rgba(var(--ember-rgb),.7);}
+.member-card.one-left{border-left-color:rgba(var(--gold-rgb),.6);}
+.card-rank{position:absolute;top:8px;right:10px;font-family:'Russo One';font-size:11px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;}
+.card-rank.top3{width:24px;height:24px;}
+.card-rank.top3 .rank-star{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.5));}
+.card-rank.top3.rank-2 .rank-star{filter:grayscale(1) brightness(1.4) drop-shadow(1px 1px 0 rgba(0,0,0,.5));}
+.card-rank.top3.rank-3 .rank-star{filter:sepia(1) saturate(3) hue-rotate(-25deg) brightness(.85) drop-shadow(1px 1px 0 rgba(0,0,0,.5));}
+.card-rank.top3 .rank-num{position:relative;z-index:1;font-size:10.5px;color:#2a1c06;font-weight:800;}
+.card-top{display:flex;align-items:center;gap:10px;}
+.card-th{flex-shrink:0;filter:drop-shadow(1px 2px 0 rgba(0,0,0,.4));}
+.card-name{font-weight:600;font-size:14px;letter-spacing:.2px;padding-right:24px;}
+.attack-rows{display:flex;flex-direction:column;gap:6px;}
+.attack-row{display:flex;align-items:center;gap:8px;}
+.attack-row.empty{opacity:.4;}
+.attack-info{display:flex;flex-direction:column;gap:2px;}
+.attack-target{font-size:10px;color:var(--text-muted);letter-spacing:.2px;}
+.attack-line{display:flex;align-items:center;gap:8px;}
+.sword-pip-wrap{position:relative;display:inline-flex;flex-shrink:0;}
+.sword-pip-sm{width:8px;height:auto;object-fit:contain;transform:rotate(16deg);filter:grayscale(1) brightness(.5) opacity(.5);transition:filter .2s ease;}
+.sword-pip-sm.used{filter:none;}
+.sword-pip-wrap .miss-x{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:14px;font-weight:800;text-shadow:0 0 2px rgba(0,0,0,.8);}
+.attack-row .card-stars{display:flex;gap:1px;}
+.star-icon{width:16px;height:16px;}
+.star-icon.dim{filter:grayscale(1) opacity(.28);}
+.attack-row .card-dmg{font-variant-numeric:tabular-nums;font-weight:600;font-size:12.5px;color:var(--text-muted);margin-left:auto;}
+.card-caption{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.card-caption.live{color:var(--ember);animation:iconPulse 1.6s ease-in-out infinite;}
+.card-caption.danger{color:var(--accent);}
+
+/* Slider / Member Spotlight */
+.watermark-trophy{top:4px;left:50%;transform:translateX(-50%);width:110px;opacity:.08;}
+.slider-panel{background:var(--surface-wood);}
+.slider-nav{display:flex;gap:8px;}
+.nav-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(var(--gold-rgb),0.35);background:transparent;color:var(--text);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.nav-btn:hover{border-color:var(--gold);color:var(--gold);}
+.slider-card{min-height:280px;display:flex;flex-direction:column;gap:14px;transition:opacity .22s ease, transform .22s ease;}
+.slider-card.fade{opacity:0;transform:translateX(10px);}
+.slide-top{display:flex;align-items:center;justify-content:space-between;}
+.slide-name{font-size:19px;}
+.slide-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-block{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,0.03);border-radius:2px;padding:10px 12px;}
+.stat-block img{width:26px;height:26px;flex-shrink:0;}
+.stat-block .num{font-size:22px;color:var(--gold);font-variant-numeric:tabular-nums;}
+.lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+.hist-lbl{display:block;margin-bottom:6px;}
+.slider-dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;justify-content:center;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.15);cursor:pointer;transition:.2s;}
+.dot.active{background:var(--gold);width:18px;border-radius:4px;}
+.attack-graph-svg{width:100%;aspect-ratio:320/170;display:block;overflow:visible;}
+.graph-gridline{stroke:rgba(255,255,255,.08);stroke-width:1;}
+.graph-axis-label{font-family:'Rajdhani',sans-serif;font-size:9px;fill:var(--text-muted);}
+.graph-x-label{font-family:'Rajdhani',sans-serif;font-size:8.5px;fill:var(--text-muted);text-anchor:middle;}
+.graph-line{stroke:var(--gold);stroke-width:1;}
+.graph-star-num{font-family:'Russo One',sans-serif;font-size:8.5px;fill:#241d10;}
+
+/* Wall of shame */
+.shame-panel{border:1.5px solid rgba(var(--accent-rgb),0.5);}
+.shame-panel h2{color:var(--accent);}
+.watermark-jjqueen{right:-16px;bottom:-14px;width:190px;opacity:.14;}
+.shame-list{display:flex;flex-direction:column;gap:10px;}
+.shame-item{background:rgba(var(--accent-rgb),0.09);border:1px solid rgba(var(--accent-rgb),0.25);border-radius:2px;padding:12px 14px;animation:tiltIn .5s ease-out both;}
+.shame-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:10px;}
+.shame-name{display:flex;align-items:center;gap:8px;font-weight:700;}
+.shame-name img{width:22px;height:22px;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.4));}
+.shame-stat{font-size:11px;color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.shame-roast{font-size:13.5px;color:var(--text-muted);font-style:italic;}
+
+/* Ticker */
+.ticker-bar{position:fixed;left:0;right:0;bottom:0;height:68px;background:rgba(38,32,26,0.95);backdrop-filter:blur(6px);border-top:1px solid rgba(var(--gold-rgb),0.2);display:flex;align-items:center;z-index:50;}
+.live-tag{display:flex;align-items:center;gap:6px;padding:0 18px;font-family:'Russo One';font-size:13px;color:var(--secondary);border-right:1px solid rgba(var(--gold-rgb),0.2);height:100%;flex-shrink:0;}
+.live-dot{width:9px;height:9px;border-radius:50%;background:var(--secondary);animation:livePulse 1.6s ease-out infinite;}
+.ticker-track-wrap{overflow:hidden;flex:1;height:100%;position:relative;}
+.ticker-track{display:flex;align-items:center;white-space:nowrap;position:absolute;left:0;animation:marquee 70s linear infinite;}
+.ticker-item{font-size:18px;display:inline-flex;align-items:center;gap:8px;}
+.ticker-item img{width:20px;height:20px;}
+.dot-sep{color:rgba(var(--gold-rgb),0.5);margin:0 26px;}
+
+/* Fan content disclaimer */
+.fan-disclaimer{margin-top:24px;text-align:center;font-size:11.5px;color:var(--text-muted);line-height:1.6;}
+.fan-disclaimer a{color:var(--text-muted);text-decoration:underline;}
+
+@keyframes blink{50%{opacity:.55;}}
+@keyframes iconPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+@keyframes tiltIn{0%{opacity:0;transform:translateY(24px) rotate(-4deg);}70%{opacity:1;transform:translateY(-2px) rotate(1.5deg);}100%{opacity:1;transform:translateY(0) rotate(0);}}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(var(--secondary-rgb),0.6);}70%{box-shadow:0 0 0 8px rgba(var(--secondary-rgb),0);}100%{box-shadow:0 0 0 0 rgba(var(--secondary-rgb),0);}}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-33.333%);}}
+
+@media (max-width:1100px){
+  .main-grid{grid-template-columns:1fr;}
+  .topbar-side{justify-content:center;}
+}
+@media (max-width:820px){
+  .clash-panel{flex-direction:column;}
+  .clash-half{clip-path:none !important;margin:0 !important;padding:24px 26px !important;flex-basis:auto !important;}
+  .clash-seam{position:static;transform:none;margin:-14px auto;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="topbar-side topbar-left">
+      <span class="clan-name" id="clanNameTop">PropellerPerps</span>
+    </div>
+    <div class="topbar-center">
+      <span class="war-state" id="warStateBadge">BATTLE DAY</span>
+      <span class="countdown" id="countdown">--:--:--</span>
+    </div>
+    <div class="topbar-side topbar-right">
+      <span class="clan-tag" id="clanTagTop">#2QYCRRVU8</span>
+    </div>
+  </header>
+
+  <section class="clash-panel textured" id="warSummary"></section>
+
+  <main class="main-grid">
+    <section class="panel war-board textured">
+      <div class="panel-watermark watermark-swords" aria-hidden="true">
+        <img src="assets/coc/sword.png" alt="">
+        <img src="assets/coc/sword.png" alt="">
+      </div>
+      <div class="panel-head">
+        <h2>War Board</h2>
+        <span class="panel-sub" id="boardSub"></span>
+      </div>
+      <div class="board-grid" id="boardBody"></div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="panel slider-panel textured">
+        <img class="panel-watermark watermark-trophy" src="assets/coc/trophy.png" alt="" aria-hidden="true">
+        <div class="panel-head">
+          <h2>Member Spotlight</h2>
+          <div class="slider-nav">
+            <button class="nav-btn" id="prevBtn" aria-label="Previous member">‹</button>
+            <button class="nav-btn" id="nextBtn" aria-label="Next member">›</button>
+          </div>
+        </div>
+        <div class="slider-card" id="sliderCard"></div>
+        <div class="slider-dots" id="sliderDots"></div>
+      </section>
+
+      <section class="panel shame-panel textured">
+        <img class="panel-bg-art watermark-jjqueen" src="assets/coc/jjqueen.png" alt="" aria-hidden="true">
+        <div class="panel-head">
+          <h2 id="shameHeading">Wall of Shame</h2>
+        </div>
+        <div class="shame-list" id="shameList"></div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="fan-disclaimer">This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: <a href="https://www.supercell.com/en/fan-content-policy/" target="_blank" rel="noopener">www.supercell.com/fan-content-policy</a>. Non-Clash icons courtesy of <a href="https://game-icons.net" target="_blank" rel="noopener">game-icons.net</a> (CC BY 3.0).</footer>
+</div>
+
+<div class="ticker-bar">
+  <span class="live-tag"><span class="live-dot"></span>LIVE</span>
+  <div class="ticker-track-wrap">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+</div>
+
+<script>
+const CLAN_NAME = "PropellerPerps";
+const CLAN_TAG = "#2QYCRRVU8";
+
+const ICONS = {
+  fire: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M162.22 21.312c-183.876 106.68 51.994 227.35-10.19 332.47C116.95 413.083 38.11 325.45 43.75 227-6.035 353.376 30.21 443.745 95.22 492.75c1.386.34 17.577.498 41.186.562-28.478-16.9-32.06-75.355 32.813-103.25l15.78-7L182.062 400c-1.356 8.34-.318 13.95 1.188 16.937 1.507 2.987 3.106 3.544 5.844 4.094 5.475 1.1 16.963-2.395 26.28-14.624 18.636-24.457 29.117-80.228-26.874-167l-4.094-6.437-13.906-19.25 23.25 9.905 5.25 1.75c80.85 25.498 135.3 58.46 174.625 112.72 21.544-22.906 38.7-56.835 43.812-91.69l3.5-27.468 13.438 23.97c25.525 45.802 30.267 104.912 11.094 156.5-14.23 38.28-42.036 72.34-84 93.5 13.623-.01 24.05.032 25.25.124 154.76-34.77 139.345-244.952-14.19-394.093.012.726 0 1.46 0 2.188 78.964 185.87-136.465 189.104-119.25 11.47-41.686 100.463-132.86-2.147-91.06-91.283zM269.093 332.25c13.51 15.806 22.35 33.086 22.78 50.812.587 24.03-9.293 47.12-24.53 66.563-14.832 18.926-34.837 34.62-56.625 43.656 33.127-.065 64.926-.16 95.217-.25l-.062-.186c30.95-18.584 47.31-38.83 53.75-57.813 6.44-18.982 3.25-37.246-5.844-53.718-15.44-27.97-49.705-47.71-84.686-49.062z"/></svg>`,
+  hourglass: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M92.656 19.188v41.5h331.72v-41.5H92.655zM119.5 79.374V433.53h22.28V79.376H119.5zm46.594 0c3.212 43.324 13.312 82.022 27.78 110.906 17.685 35.304 40.845 54.75 64.064 54.75 23.218 0 46.346-19.446 64.03-54.75 14.47-28.883 24.57-67.58 27.782-110.905H166.094zm209.156 0V433.53h22.28V79.376h-22.28zm-117.313 185.22c-23.218 0-46.378 19.415-64.062 54.717-14.835 29.614-25.098 69.562-28.03 114.22H350c-2.933-44.658-13.197-84.606-28.03-114.22-17.686-35.302-40.814-54.718-64.033-54.718zM92.657 452.218v41.467h331.718V452.22H92.655z"/></svg>`,
+  skull: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M425.344 22.22c-9.027.085-18.7 5.826-24.344 19.405-11.143 26.803-31.93 59.156-58.563 93.47a141.233 141.233 0 0 1 27.5 30.31c35.1-26.57 68.882-46.81 98.125-56.75 44.6-15.16 12.02-69.72-35.343-35.343 26.91-27.842 11.107-51.27-7.376-51.093zm-341.22.03c-18.5.378-37.604 23.962-16.343 49.875C31.523 38.635-.802 85.48 37.095 102.813c28.085 12.844 62.54 35.66 99.062 64.343 8.125-12.5 18.207-23.61 29.78-32.937-26.782-35.743-48.44-69.835-61.78-98.47-4.515-9.69-12.22-13.66-20.03-13.5zm169.5 99.688c-67.104 0-121.31 54.21-121.31 121.312 0 44.676 24.04 83.613 59.905 104.656v56.406h18.718v-47.468a120.352 120.352 0 0 0 16.093 4.78v42.688h18.69v-40.03a123.913 123.913 0 0 0 15.749 0v40.03h18.686v-42.687a120.573 120.573 0 0 0 16.094-4.78v47.467h18.688V347.97c35.92-21.03 60-60.003 60-104.72 0-67.105-54.208-121.313-121.313-121.313zm-66.874 88.218c19.88 0 36 16.12 36 36s-16.12 36-36 36-36-16.12-36-36 16.12-36 36-36zm133.563 0c19.878 0 36 16.12 36 36s-16.122 36-36 36c-19.88 0-36-16.12-36-36s16.12-36 36-36zm-66.72 52.344 29.938 48.188h-59.874l29.938-48.188zm-107.28 70.563c-40.263 32.472-78.546 58.41-109.22 72.437-37.896 17.334-5.57 64.146 30.688 30.656-30.237 36.854 21.167 69.05 36.376 36.406 15.072-32.352 40.727-71.7 72.438-112.5a140.972 140.972 0 0 1-30.28-27zm213.156 1.718a141.025 141.025 0 0 1-27.908 24.69c31.846 39.39 56.82 76.862 69.438 107.217 17.203 41.383 71.774 9.722 31.72-31.718 47.363 34.376 79.94-20.185 35.342-35.345-32.146-10.926-69.758-34.3-108.593-64.844z"/></svg>`,
+  shield: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M256 16c25 24 100 72 150 72v96c0 96-75 240-150 312-75-72-150-216-150-312V88c50 0 125-48 150-72z"/></svg>`,
+  brokenShield: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M45.906 23.625v9.344c0 102.68 10.49 205.087 41.125 288.155 30.637 83.068 82.364 147.415 163.75 169.78l2.22.626 2.22-.5C344.49 472 396.864 407.39 425.593 323.47c28.728-83.92 35.25-187.777 35.25-290.5v-9.345H45.906zM64.72 42.313h377.34c-.413 98.8-7.497 197.342-34.125 275.125-27.21 79.487-73.39 136.637-154.375 154.78-73.28-21.03-119.914-78.696-149-157.562-28.475-77.212-39.206-174.13-39.843-272.344zm18.81 18.75c.807 84.13 12.486 172.823 39.314 244.812 7.825 20.998 16.874 40.495 27.25 58.063l45.844-38.438-40.75-75.063-5.47-10.062 10.97-3.344s38.865-11.786 60.406-18.25l20.437-7.25-94.843-150.468H83.53zm160.25 0 45.782 91.5 132.407-43.157c.69-16.205 1.053-32.366 1.155-48.344H243.78zm177.157 68.343L298.031 169.47l24.908 49.78 25.875 48.72 53.28-1.845c10.245-42.834 16.03-89.664 18.844-136.72zM310.908 236.47l-30.75 10.374 67.25 145.187c17.813-23.2 31.737-51.6 42.624-83.686 2.578-7.595 4.966-15.39 7.19-23.344l-53.626 1.844-5.844.22-2.75-5.158-24.094-45.437zm-99.22 4.686c-13.133 3.972-27.346 8.262-34.625 10.47L216 323.28l3.625 6.72-5.844 4.906-53.56 44.906c24.67 35.91 55.887 61.828 94.655 73.125 30.34-6.91 55.36-21.496 76.03-42.062L211.69 241.155z"/></svg>`,
+  crossedSwords: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M19.75 14.438c59.538 112.29 142.51 202.35 232.28 292.718l3.626 3.75.063-.062c21.827 21.93 44.04 43.923 66.405 66.25-18.856 14.813-38.974 28.2-59.938 40.312l28.532 28.53 68.717-68.717c42.337 27.636 76.286 63.646 104.094 105.81l28.064-28.06c-42.47-27.493-79.74-60.206-106.03-103.876l68.936-68.938-28.53-28.53c-11.115 21.853-24.413 42.015-39.47 60.593-43.852-43.8-86.462-85.842-130.125-125.47-.224-.203-.432-.422-.656-.625C183.624 122.75 108.515 63.91 19.75 14.437zm471.875 0c-83.038 46.28-154.122 100.78-221.97 161.156l22.814 21.562 56.81-56.812 13.22 13.187-56.438 56.44 24.594 23.186c61.802-66.92 117.6-136.92 160.97-218.72zm-329.53 125.906 200.56 200.53a402.965 402.965 0 0 1-13.405 13.032L148.875 153.53l13.22-13.186zm-76.69 113.28-28.5 28.532 68.907 68.906c-26.29 43.673-63.53 76.414-106 103.907l28.063 28.06c27.807-42.164 61.758-78.174 104.094-105.81l68.718 68.717 28.53-28.53c-20.962-12.113-41.08-25.5-59.937-40.313 17.865-17.83 35.61-35.433 53.157-52.97l-24.843-25.655-55.47 55.467c-4.565-4.238-9.014-8.62-13.374-13.062l55.844-55.844-24.53-25.374c-18.28 17.856-36.602 36.06-55.158 54.594-15.068-18.587-28.38-38.758-39.5-60.625z"/></svg>`
+};
+function icon(name, color){
+  const style = color ? ` style="color:${color}"` : "";
+  return `<span class="icon"${style}>${ICONS[name]}</span>`;
+}
+
+const opponent = {
+  name: "Shadow Vipers",
+  stars: 25,
+  maxStars: 45,
+  destruction: 52.3,
+  attacksUsed: 19,
+  attacksTotal: 30
+};
+
+const members = [
+  { name:"ChiefPix", th:16, attacksUsed:2, attacksTotal:2, stars:[3,3], destruction:[100,100], targets:["ScaleWraith #18", "VenomFang #7"], status:"complete", careerStars:1284, avgDestruction:93.4, history:[{s:3,p:100},{s:3,p:100},{s:3,p:100},{s:2,p:92},{s:2,p:69},{s:3,p:100},{s:2,p:89},{s:3,p:100},{s:3,p:100},{s:2,p:84}] },
+  { name:"ArcherQueenAmy", th:16, attacksUsed:2, attacksTotal:2, stars:[3,2], destruction:[100,89], targets:["ViperVex #23", "FangLord #21"], status:"complete", careerStars:1190, avgDestruction:92.1, history:[{s:2,p:93},{s:3,p:100},{s:3,p:100},{s:2,p:93},{s:3,p:100},{s:2,p:78},{s:3,p:100},{s:2,p:79},{s:2,p:78},{s:3,p:100}] },
+  { name:"DragonDrew", th:15, attacksUsed:2, attacksTotal:2, stars:[3,3], destruction:[97,100], targets:["KingCobraCarl #14", "PitViper #8"], status:"complete", careerStars:1052, avgDestruction:80.8, history:[{s:3,p:98},{s:2,p:86},{s:3,p:100},{s:2,p:87},{s:3,p:100},{s:2,p:65},{s:2,p:84},{s:2,p:66},{s:1,p:59},{s:2,p:63}] },
+  { name:"PekkaPaul", th:15, attacksUsed:1, attacksTotal:2, stars:[2], destruction:[78], targets:["PoisonPixie #15"], status:"one-left", careerStars:874, avgDestruction:73.8, history:[{s:2,p:83},{s:2,p:68},{s:1,p:53},{s:1,p:51},{s:2,p:91},{s:2,p:91},{s:2,p:93},{s:1,p:59},{s:2,p:68},{s:2,p:81}] },
+  { name:"ValkyrieVee", th:15, attacksUsed:2, attacksTotal:2, stars:[3,1], destruction:[95,42], targets:["CobraKing #19", "RattleJaw #9"], status:"complete", careerStars:812, avgDestruction:83.1, history:[{s:2,p:69},{s:2,p:93},{s:2,p:91},{s:2,p:89},{s:2,p:78},{s:2,p:77},{s:2,p:89},{s:3,p:100},{s:2,p:81},{s:2,p:64}] },
+  { name:"HogRiderHank", th:14, attacksUsed:2, attacksTotal:2, stars:[2,3], destruction:[81,100], targets:["GreenMambaGia #26", "SidewinderSam #28"], status:"complete", careerStars:945, avgDestruction:80.2, history:[{s:3,p:96},{s:3,p:100},{s:1,p:55},{s:2,p:63},{s:2,p:76},{s:2,p:91},{s:2,p:73},{s:3,p:97},{s:1,p:54},{s:3,p:97}] },
+  { name:"WallBreakerWes", th:14, attacksUsed:1, attacksTotal:2, stars:[3], destruction:[100], targets:["SlitherQueen #1"], status:"one-left", careerStars:701, avgDestruction:85.6, history:[{s:2,p:66},{s:3,p:100},{s:2,p:71},{s:2,p:89},{s:3,p:100},{s:3,p:100},{s:2,p:88},{s:2,p:67},{s:2,p:75},{s:3,p:100}] },
+  { name:"MinerMike", th:14, attacksUsed:0, attacksTotal:2, stars:[], destruction:[], targets:[], status:"attacking", careerStars:688, avgDestruction:73.8, history:[{s:2,p:73},{s:2,p:85},{s:2,p:87},{s:2,p:87},{s:2,p:61},{s:2,p:90},{s:1,p:46},{s:1,p:47},{s:3,p:95},{s:2,p:67}] },
+  { name:"LavaLoonLucy", th:14, attacksUsed:2, attacksTotal:2, stars:[1,2], destruction:[55,73], targets:["ShadowScale #25", "MambaMight #6"], status:"complete", careerStars:604, avgDestruction:58.6, history:[{s:2,p:66},{s:2,p:73},{s:1,p:44},{s:2,p:87},{s:1,p:45},{s:1,p:48},{s:1,p:50},{s:2,p:74},{s:1,p:52},{s:1,p:47}] },
+  { name:"BowlerBrad", th:13, attacksUsed:1, attacksTotal:2, stars:[2], destruction:[67], targets:["BasiliskBoss #11"], status:"one-left", careerStars:512, avgDestruction:65.7, history:[{s:2,p:60},{s:2,p:88},{s:1,p:48},{s:1,p:52},{s:2,p:83},{s:2,p:75},{s:2,p:69},{s:2,p:75},{s:1,p:54},{s:1,p:53}] },
+  { name:"WitchWendy", th:13, attacksUsed:0, attacksTotal:2, stars:[], destruction:[], targets:[], status:"missed", careerStars:398, avgDestruction:62.8, history:[{s:1,p:57},{s:1,p:36},{s:1,p:40},{s:2,p:75},{s:2,p:85},{s:2,p:78},{s:2,p:61},{s:1,p:52},{s:2,p:77},{s:2,p:67}] },
+  { name:"SneakyGoblin", th:13, attacksUsed:0, attacksTotal:2, stars:[], destruction:[], targets:[], status:"missed", careerStars:355, avgDestruction:58.9, history:[{s:1,p:46},{s:2,p:77},{s:2,p:71},{s:2,p:70},{s:1,p:48},{s:1,p:59},{s:2,p:79},{s:1,p:38},{s:2,p:64},{s:1,p:37}] },
+  { name:"YetiYara", th:12, attacksUsed:2, attacksTotal:2, stars:[3,3], destruction:[100,96], targets:["CoilStrike #5", "ToxicTail #4"], status:"complete", careerStars:470, avgDestruction:80.4, history:[{s:1,p:59},{s:3,p:96},{s:1,p:57},{s:2,p:70},{s:1,p:58},{s:3,p:96},{s:2,p:88},{s:3,p:100},{s:2,p:83},{s:3,p:97}] },
+  { name:"BowlerBecca", th:12, attacksUsed:1, attacksTotal:2, stars:[1], destruction:[38], targets:["AdderAce #3"], status:"one-left", careerStars:290, avgDestruction:50.6, history:[{s:2,p:75},{s:1,p:51},{s:1,p:57},{s:1,p:36},{s:1,p:33},{s:2,p:73},{s:2,p:69},{s:1,p:39},{s:1,p:45},{s:1,p:28}] },
+  { name:"GoblinGary", th:11, attacksUsed:0, attacksTotal:2, stars:[], destruction:[], targets:[], status:"missed", careerStars:214, avgDestruction:52.0, history:[{s:2,p:72},{s:1,p:39},{s:2,p:61},{s:1,p:44},{s:1,p:55},{s:1,p:44},{s:2,p:60},{s:1,p:44},{s:1,p:32},{s:2,p:69}] }
+];
+
+const shameList = [
+  { name:"WitchWendy", roast:"Logged in. Looked at the map. Logged off." },
+  { name:"SneakyGoblin", roast:"True to the name — nowhere to be found." },
+  { name:"GoblinGary", roast:"Forgot war existed. Again." },
+  { name:"BowlerBecca", roast:"38% and a single star. The base sends its regards." }
+];
+
+const tickerEvents = [
+  { i:"fire", t:"ChiefPix 3-starred Shadow Vipers #1" },
+  { i:"skull", t:"GoblinGary hasn't attacked — 2h left" },
+  { i:"crossedSwords", t:"MinerMike is attacking Shadow Vipers #9" },
+  { i:"trophy", t:"DragonDrew posted a fresh best: 100% destruction" },
+  { i:"brokenShield", t:"BowlerBecca 1-starred a TH12 — ouch" },
+  { i:"hourglass", t:"4 members still have attacks remaining" },
+  { i:"shield", t:"PropellerPerps lead by 4 stars" },
+  { i:"skull", t:"WitchWendy hasn't attacked — 2h left" },
+  { i:"fire", t:"YetiYara double 3-starred — clean sweep" },
+  { i:"skull", t:"SneakyGoblin hasn't attacked — 2h left" }
+];
+const TICKER_COLOR = { fire:"var(--ember)", skull:"var(--accent)", crossedSwords:"var(--gold)", brokenShield:"var(--accent)", hourglass:"var(--text-muted)", shield:"var(--secondary)" };
+
+const WAR_END = new Date(Date.now() + (2 * 3600 + 14 * 60 + 37) * 1000);
+const URGENT_MS = 6 * 3600 * 1000;
+let warHasEnded = false;
+
+const bestStars = m => m.stars.length ? Math.max(...m.stars) : 0;
+const bestDestruction = m => m.destruction.length ? Math.max(...m.destruction) : 0;
+
+function starRow(count, total){
+  total = total || 3;
+  let out = "";
+  for (let i = 0; i < total; i++) {
+    out += `<img class="star-icon ${i < count ? "" : "dim"}" src="assets/coc/star.png" alt="">`;
+  }
+  return out;
+}
+
+function thImage(level){
+  return `assets/coc/th${level === 1 ? 2 : level}.png`;
+}
+
+function warRankMap(){
+  const scored = members.map((m, idx) => ({
+    idx,
+    totalStars: m.stars.reduce((s, v) => s + v, 0),
+    totalDmg: m.destruction.reduce((s, v) => s + v, 0)
+  }));
+  scored.sort((a, b) => b.totalStars - a.totalStars || b.totalDmg - a.totalDmg);
+  const rankMap = {};
+  scored.forEach((s, i) => { rankMap[s.idx] = i + 1; });
+  return rankMap;
+}
+
+const STATUS_LABEL = { complete: "Complete", "one-left": "1 Left", attacking: "Attacking…", missed: "Missed" };
+
+function renderSummary(){
+  const usStars = members.reduce((s, m) => s + bestStars(m), 0);
+  const usMax = members.length * 3;
+  const usDestruction = members.reduce((s, m) => s + bestDestruction(m), 0) / members.length;
+  const usAttacksUsed = members.reduce((s, m) => s + m.attacksUsed, 0);
+  const usAttacksTotal = members.length * 2;
+  const usLeading = usStars >= opponent.stars;
+
+  const totalStars = usStars + opponent.stars;
+  const rawShare = totalStars > 0 ? (usStars / totalStars) : 0.5;
+  const usPct = Math.min(68, Math.max(32, rawShare * 100)).toFixed(2);
+  const themPct = (100 - usPct).toFixed(2);
+  const tiltDeg = usLeading ? 16 : -16;
+
+  document.getElementById("boardSub").textContent = `${usAttacksUsed}/${usAttacksTotal} attacks used`;
+
+  document.getElementById("warSummary").innerHTML = `
+    <div class="clash-half us ${usLeading ? "leading" : ""}" style="flex-basis:${usPct}%">
+      <div class="team-name">${CLAN_NAME} ${usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
+      <div class="team-stars">${usStars}<img src="assets/coc/star.png" alt="star"><small>/${usMax}</small></div>
+      <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${usDestruction.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${usAttacksUsed}/${usAttacksTotal}</span></div>
+    </div>
+    <div class="clash-seam" style="left:${usPct}%">
+      <img class="seam-sword" src="assets/coc/sword.png" alt="" style="transform:translate(calc(-50% - 26px), -50%) rotate(${tiltDeg}deg)">
+      <div class="vs-mark"><span class="vs-v">V</span><span class="vs-s">S</span></div>
+    </div>
+    <div class="clash-half them ${!usLeading ? "leading" : ""}" style="flex-basis:${themPct}%">
+      <div class="team-name">${opponent.name} ${!usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
+      <div class="team-stars">${opponent.stars}<img src="assets/coc/star.png" alt="star"><small>/${opponent.maxStars}</small></div>
+      <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${opponent.destruction.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${opponent.attacksUsed}/${opponent.attacksTotal}</span></div>
+    </div>`;
+}
+
+function renderBoard(){
+  const rankMap = warRankMap();
+  const order = members.map((_, i) => i).sort((a, b) => rankMap[a] - rankMap[b]);
+  document.getElementById("boardBody").innerHTML = order.map(i => {
+    const m = members[i];
+    const rank = rankMap[i];
+    const rankHTML = rank <= 3
+      ? `<span class="card-rank top3 rank-${rank}"><img class="rank-star" src="assets/coc/star.png" alt=""><span class="rank-num">${rank}</span></span>`
+      : `<span class="card-rank">${rank}</span>`;
+
+    const rows = Array.from({ length: m.attacksTotal }, (_, r) => {
+      const used = r < m.attacksUsed;
+      const missed = !used && warHasEnded;
+      const pipWrap = `<span class="sword-pip-wrap"><img class="sword-pip-sm ${used ? "used" : ""}" src="assets/coc/sword.png" alt="">${missed ? '<span class="miss-x">✕</span>' : ""}</span>`;
+      if (used) {
+        return `<div class="attack-row">${pipWrap}<div class="attack-info"><div class="attack-target">vs ${m.targets[r]}</div><div class="attack-line"><span class="card-stars">${starRow(m.stars[r])}</span><span class="card-dmg">${m.destruction[r]}%</span></div></div></div>`;
+      }
+      return `<div class="attack-row empty">${pipWrap}</div>`;
+    }).join("");
+
+    const caption = m.status === "attacking" ? `<div class="card-caption live">Attacking now</div>` : "";
+
+    return `<div class="member-card ${m.status}">
+      ${rankHTML}
+      <div class="card-top">
+        <img class="card-th" src="${thImage(m.th)}" width="46" height="46" alt="TH${m.th}">
+        <span class="card-name">${m.name}</span>
+      </div>
+      <div class="attack-rows">${rows}</div>
+      ${caption}
+    </div>`;
+  }).join("");
+}
+
+let sliderIndex = 0;
+let sliderTimer = null;
+
+function graphSVG(history){
+  const w = 320, hgt = 170, padL = 30, padR = 10, padT = 14, padB = 22;
+  const innerW = w - padL - padR, innerH = hgt - padT - padB;
+  const stepX = innerW / (history.length - 1);
+  const pts = history.map((pt, i) => ({
+    x: padL + i * stepX,
+    y: padT + innerH * (1 - pt.p / 100),
+    s: pt.s
+  }));
+  const linePath = pts.map((pt, i) => (i === 0 ? "M" : "L") + pt.x.toFixed(1) + " " + pt.y.toFixed(1)).join(" ");
+  const dots = pts.map(pt => `
+    <g transform="translate(${pt.x.toFixed(1)},${pt.y.toFixed(1)})">
+      <image href="assets/coc/star.png" x="-9" y="-9" width="18" height="18"/>
+      <text x="0" y="1" text-anchor="middle" dominant-baseline="middle" class="graph-star-num">${pt.s}</text>
+    </g>`).join("");
+  const yTicks = [0, 20, 40, 60, 80, 100].map(pct => {
+    const y = padT + innerH * (1 - pct / 100);
+    return `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${w - padR}" y2="${y.toFixed(1)}" class="graph-gridline"/>
+      <text x="${padL - 6}" y="${y.toFixed(1)}" text-anchor="end" dominant-baseline="middle" class="graph-axis-label">${pct}%</text>`;
+  }).join("");
+  const xLabels = pts.map((pt, i) => `<text x="${pt.x.toFixed(1)}" y="${hgt - 4}" class="graph-x-label">A${i + 1}</text>`).join("");
+  return `<svg class="attack-graph-svg" viewBox="0 0 ${w} ${hgt}">
+    ${yTicks}
+    <path d="${linePath}" class="graph-line" fill="none"/>
+    ${dots}
+    ${xLabels}
+  </svg>`;
+}
+
+function slideHTML(m){
+  return `
+    <div class="slide-top">
+      <span class="slide-name">${m.name}</span>
+      <img class="card-th" src="${thImage(m.th)}" width="40" height="40" alt="TH${m.th}">
+    </div>
+    <div class="slide-stats">
+      <div class="stat-block"><img src="assets/coc/star.png" alt=""><span class="num">${m.careerStars.toLocaleString()}</span></div>
+      <div class="stat-block"><img src="assets/coc/destruction.png" alt=""><span class="num">${m.avgDestruction.toFixed(0)}%</span></div>
+    </div>
+    <div>
+      <span class="lbl hist-lbl">Last 10 Attacks</span>
+      ${graphSVG(m.history)}
+    </div>`;
+}
+
+function renderSlide(i, skipFade){
+  sliderIndex = (i + members.length) % members.length;
+  const card = document.getElementById("sliderCard");
+  const fill = () => {
+    card.innerHTML = slideHTML(members[sliderIndex]);
+    card.classList.remove("fade");
+    updateDots();
+  };
+  if (skipFade) { fill(); return; }
+  card.classList.add("fade");
+  setTimeout(fill, 220);
+}
+
+function nextSlide(){ renderSlide(sliderIndex + 1); }
+function prevSlide(){ renderSlide(sliderIndex - 1); }
+
+function renderDotsShell(){
+  const dots = document.getElementById("sliderDots");
+  dots.innerHTML = members.map((_, i) => `<span class="dot" data-i="${i}"></span>`).join("");
+  dots.querySelectorAll(".dot").forEach(d => {
+    d.addEventListener("click", () => { renderSlide(parseInt(d.dataset.i, 10)); resetAutoSlide(); });
+  });
+}
+
+function updateDots(){
+  document.querySelectorAll("#sliderDots .dot").forEach((d, i) => d.classList.toggle("active", i === sliderIndex));
+}
+
+function startAutoSlide(){ sliderTimer = setInterval(nextSlide, 7000); }
+function resetAutoSlide(){ clearInterval(sliderTimer); startAutoSlide(); }
+
+function renderShame(){
+  document.getElementById("shameList").innerHTML = shameList.map((s, i) => {
+    const m = members.find(x => x.name === s.name);
+    const stat = m.attacksUsed === 0 ? `${m.attacksUsed}/${m.attacksTotal} attacks` : `${bestStars(m)}★ · ${bestDestruction(m)}%`;
+    return `<div class="shame-item" style="animation-delay:${(i * 0.12).toFixed(2)}s">
+      <div class="shame-top">
+        <span class="shame-name"><img src="${thImage(m.th)}" alt="TH${m.th}"> ${m.name}</span>
+        <span class="shame-stat">${stat}</span>
+      </div>
+      <div class="shame-roast">"${s.roast}"</div>
+    </div>`;
+  }).join("");
+}
+
+function renderTicker(){
+  const items = tickerEvents.map(e => {
+    const media = e.i === "trophy"
+      ? `<img src="assets/coc/trophy.png" alt="">`
+      : icon(e.i, TICKER_COLOR[e.i]);
+    return `<span class="ticker-item">${media}${e.t}</span>`;
+  });
+  const loop = items.join('<span class="dot-sep">•</span>');
+  document.getElementById("tickerTrack").innerHTML = loop + '<span class="dot-sep">•</span>' + loop + '<span class="dot-sep">•</span>' + loop + '<span class="dot-sep">•</span>';
+}
+
+function updateCountdown(){
+  const diff = WAR_END - new Date();
+  const el = document.getElementById("countdown");
+  const clamped = Math.max(diff, 0);
+  const h = Math.floor(clamped / 3600000);
+  const m = Math.floor((clamped % 3600000) / 60000);
+  const s = Math.floor((clamped % 60000) / 1000);
+  el.textContent = [h, m, s].map(n => String(n).padStart(2, "0")).join(":");
+  el.classList.toggle("urgent", clamped < URGENT_MS);
+  if (clamped <= 0 && !warHasEnded) {
+    warHasEnded = true;
+    renderBoard();
+  }
+}
+
+document.getElementById("clanNameTop").textContent = CLAN_NAME;
+document.getElementById("clanTagTop").textContent = CLAN_TAG;
+document.getElementById("warStateBadge").innerHTML = icon("crossedSwords") + " BATTLE DAY";
+document.getElementById("shameHeading").innerHTML = icon("skull") + " Wall of Shame";
+renderSummary();
+renderBoard();
+renderDotsShell();
+renderSlide(0, true);
+startAutoSlide();
+renderShame();
+renderTicker();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+document.getElementById("prevBtn").addEventListener("click", () => { prevSlide(); resetAutoSlide(); });
+document.getElementById("nextBtn").addEventListener("click", () => { nextSlide(); resetAutoSlide(); });
+</script>
+</body>
+</html>

@@ -193,6 +193,12 @@ def test_get_cwl_war_data():
         "totalDestructionPercentage", result["totalDestructionPercentage"], 58.86666666666667
     )
     ok &= check("member count", len(result["members"]), 15)
+    ok &= check("opponent name", result["opponent"]["name"], "Element Clan :)")
+    ok &= check("opponent attacksCompleted", result["opponent"]["attacksCompleted"], 15)
+    ok &= check("opponent starsGained", result["opponent"]["starsGained"], 45)
+    ok &= check(
+        "opponent totalDestructionPercentage", result["opponent"]["totalDestructionPercentage"], 100.0
+    )
 
     lalo = next(m for m in result["members"] if m["name"] == "Lalo")
     ok &= check("Lalo townhallLevel", lalo["townhallLevel"], 15)

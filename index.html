@@ -99,6 +99,7 @@ button{font-family:inherit;}
 .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;}
 .panel h2{font-size:16px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px;}
 .panel-sub{font-size:13px;color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.empty-state{padding:24px 8px;text-align:center;color:var(--text-muted);font-size:14px;}
 
 /* War board — card grid */
 .watermark-swords{right:6px;bottom:6px;width:120px;height:120px;opacity:.07;filter:grayscale(1);}
@@ -110,7 +111,7 @@ button{font-family:inherit;}
 .member-card:hover{transform:translateY(-2px);background:rgba(var(--gold-rgb),0.05);}
 .member-card.complete{border-left-color:rgba(var(--secondary-rgb),.6);}
 .member-card.missed{opacity:.55;border-left-color:rgba(var(--accent-rgb),.6);}
-.member-card.attacking{border-left-color:rgba(var(--ember-rgb),.7);}
+.member-card.pending{border-left-color:rgba(var(--ember-rgb),.7);}
 .member-card.one-left{border-left-color:rgba(var(--gold-rgb),.6);}
 .card-rank{position:absolute;top:8px;right:10px;font-family:'Russo One';font-size:11px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;}
 .card-rank.top3{width:24px;height:24px;}
@@ -136,7 +137,6 @@ button{font-family:inherit;}
 .star-icon.dim{filter:grayscale(1) opacity(.28);}
 .attack-row .card-dmg{font-variant-numeric:tabular-nums;font-weight:600;font-size:12.5px;color:var(--text-muted);margin-left:auto;}
 .card-caption{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
-.card-caption.live{color:var(--ember);animation:iconPulse 1.6s ease-in-out infinite;}
 .card-caption.danger{color:var(--accent);}
 
 /* Slider / Member Spotlight */
@@ -158,12 +158,6 @@ button{font-family:inherit;}
 .slider-dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;justify-content:center;}
 .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.15);cursor:pointer;transition:.2s;}
 .dot.active{background:var(--gold);width:18px;border-radius:4px;}
-.attack-graph-svg{width:100%;aspect-ratio:320/170;display:block;overflow:visible;}
-.graph-gridline{stroke:rgba(255,255,255,.08);stroke-width:1;}
-.graph-axis-label{font-family:'Rajdhani',sans-serif;font-size:9px;fill:var(--text-muted);}
-.graph-x-label{font-family:'Rajdhani',sans-serif;font-size:8.5px;fill:var(--text-muted);text-anchor:middle;}
-.graph-line{stroke:var(--gold);stroke-width:1;}
-.graph-star-num{font-family:'Russo One',sans-serif;font-size:8.5px;fill:#241d10;}
 
 /* Wall of shame */
 .shame-panel{border:1.5px solid rgba(var(--accent-rgb),0.5);}
@@ -179,8 +173,6 @@ button{font-family:inherit;}
 
 /* Ticker */
 .ticker-bar{position:fixed;left:0;right:0;bottom:0;height:68px;background:rgba(38,32,26,0.95);backdrop-filter:blur(6px);border-top:1px solid rgba(var(--gold-rgb),0.2);display:flex;align-items:center;z-index:50;}
-.live-tag{display:flex;align-items:center;gap:6px;padding:0 18px;font-family:'Russo One';font-size:13px;color:var(--secondary);border-right:1px solid rgba(var(--gold-rgb),0.2);height:100%;flex-shrink:0;}
-.live-dot{width:9px;height:9px;border-radius:50%;background:var(--secondary);animation:livePulse 1.6s ease-out infinite;}
 .ticker-track-wrap{overflow:hidden;flex:1;height:100%;position:relative;}
 .ticker-track{display:flex;align-items:center;white-space:nowrap;position:absolute;left:0;animation:marquee 70s linear infinite;}
 .ticker-item{font-size:18px;display:inline-flex;align-items:center;gap:8px;}
@@ -192,9 +184,7 @@ button{font-family:inherit;}
 .fan-disclaimer a{color:var(--text-muted);text-decoration:underline;}
 
 @keyframes blink{50%{opacity:.55;}}
-@keyframes iconPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
 @keyframes tiltIn{0%{opacity:0;transform:translateY(24px) rotate(-4deg);}70%{opacity:1;transform:translateY(-2px) rotate(1.5deg);}100%{opacity:1;transform:translateY(0) rotate(0);}}
-@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(var(--secondary-rgb),0.6);}70%{box-shadow:0 0 0 8px rgba(var(--secondary-rgb),0);}100%{box-shadow:0 0 0 0 rgba(var(--secondary-rgb),0);}}
 @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-33.333%);}}
 
 @media (max-width:1100px){
@@ -266,7 +256,6 @@ button{font-family:inherit;}
 </div>
 
 <div class="ticker-bar">
-  <span class="live-tag"><span class="live-dot"></span>LIVE</span>
   <div class="ticker-track-wrap">
     <div class="ticker-track" id="tickerTrack"></div>
   </div>
@@ -289,60 +278,20 @@ function icon(name, color){
   return `<span class="icon"${style}>${ICONS[name]}</span>`;
 }
 
-const opponent = {
-  name: "Shadow Vipers",
-  stars: 25,
-  maxStars: 45,
-  destruction: 52.3,
-  attacksUsed: 19,
-  attacksTotal: 30
-};
-
-const members = [
-  { name:"ChiefPix", th:16, attacksUsed:2, attacksTotal:2, stars:[3,3], destruction:[100,100], targets:["ScaleWraith #18", "VenomFang #7"], status:"complete", careerStars:1284, avgDestruction:93.4, history:[{s:3,p:100},{s:3,p:100},{s:3,p:100},{s:2,p:92},{s:2,p:69},{s:3,p:100},{s:2,p:89},{s:3,p:100},{s:3,p:100},{s:2,p:84}] },
-  { name:"ArcherQueenAmy", th:16, attacksUsed:2, attacksTotal:2, stars:[3,2], destruction:[100,89], targets:["ViperVex #23", "FangLord #21"], status:"complete", careerStars:1190, avgDestruction:92.1, history:[{s:2,p:93},{s:3,p:100},{s:3,p:100},{s:2,p:93},{s:3,p:100},{s:2,p:78},{s:3,p:100},{s:2,p:79},{s:2,p:78},{s:3,p:100}] },
-  { name:"DragonDrew", th:15, attacksUsed:2, attacksTotal:2, stars:[3,3], destruction:[97,100], targets:["KingCobraCarl #14", "PitViper #8"], status:"complete", careerStars:1052, avgDestruction:80.8, history:[{s:3,p:98},{s:2,p:86},{s:3,p:100},{s:2,p:87},{s:3,p:100},{s:2,p:65},{s:2,p:84},{s:2,p:66},{s:1,p:59},{s:2,p:63}] },
-  { name:"PekkaPaul", th:15, attacksUsed:1, attacksTotal:2, stars:[2], destruction:[78], targets:["PoisonPixie #15"], status:"one-left", careerStars:874, avgDestruction:73.8, history:[{s:2,p:83},{s:2,p:68},{s:1,p:53},{s:1,p:51},{s:2,p:91},{s:2,p:91},{s:2,p:93},{s:1,p:59},{s:2,p:68},{s:2,p:81}] },
-  { name:"ValkyrieVee", th:15, attacksUsed:2, attacksTotal:2, stars:[3,1], destruction:[95,42], targets:["CobraKing #19", "RattleJaw #9"], status:"complete", careerStars:812, avgDestruction:83.1, history:[{s:2,p:69},{s:2,p:93},{s:2,p:91},{s:2,p:89},{s:2,p:78},{s:2,p:77},{s:2,p:89},{s:3,p:100},{s:2,p:81},{s:2,p:64}] },
-  { name:"HogRiderHank", th:14, attacksUsed:2, attacksTotal:2, stars:[2,3], destruction:[81,100], targets:["GreenMambaGia #26", "SidewinderSam #28"], status:"complete", careerStars:945, avgDestruction:80.2, history:[{s:3,p:96},{s:3,p:100},{s:1,p:55},{s:2,p:63},{s:2,p:76},{s:2,p:91},{s:2,p:73},{s:3,p:97},{s:1,p:54},{s:3,p:97}] },
-  { name:"WallBreakerWes", th:14, attacksUsed:1, attacksTotal:2, stars:[3], destruction:[100], targets:["SlitherQueen #1"], status:"one-left", careerStars:701, avgDestruction:85.6, history:[{s:2,p:66},{s:3,p:100},{s:2,p:71},{s:2,p:89},{s:3,p:100},{s:3,p:100},{s:2,p:88},{s:2,p:67},{s:2,p:75},{s:3,p:100}] },
-  { name:"MinerMike", th:14, attacksUsed:0, attacksTotal:2, stars:[], destruction:[], targets:[], status:"attacking", careerStars:688, avgDestruction:73.8, history:[{s:2,p:73},{s:2,p:85},{s:2,p:87},{s:2,p:87},{s:2,p:61},{s:2,p:90},{s:1,p:46},{s:1,p:47},{s:3,p:95},{s:2,p:67}] },
-  { name:"LavaLoonLucy", th:14, attacksUsed:2, attacksTotal:2, stars:[1,2], destruction:[55,73], targets:["ShadowScale #25", "MambaMight #6"], status:"complete", careerStars:604, avgDestruction:58.6, history:[{s:2,p:66},{s:2,p:73},{s:1,p:44},{s:2,p:87},{s:1,p:45},{s:1,p:48},{s:1,p:50},{s:2,p:74},{s:1,p:52},{s:1,p:47}] },
-  { name:"BowlerBrad", th:13, attacksUsed:1, attacksTotal:2, stars:[2], destruction:[67], targets:["BasiliskBoss #11"], status:"one-left", careerStars:512, avgDestruction:65.7, history:[{s:2,p:60},{s:2,p:88},{s:1,p:48},{s:1,p:52},{s:2,p:83},{s:2,p:75},{s:2,p:69},{s:2,p:75},{s:1,p:54},{s:1,p:53}] },
-  { name:"WitchWendy", th:13, attacksUsed:0, attacksTotal:2, stars:[], destruction:[], targets:[], status:"missed", careerStars:398, avgDestruction:62.8, history:[{s:1,p:57},{s:1,p:36},{s:1,p:40},{s:2,p:75},{s:2,p:85},{s:2,p:78},{s:2,p:61},{s:1,p:52},{s:2,p:77},{s:2,p:67}] },
-  { name:"SneakyGoblin", th:13, attacksUsed:0, attacksTotal:2, stars:[], destruction:[], targets:[], status:"missed", careerStars:355, avgDestruction:58.9, history:[{s:1,p:46},{s:2,p:77},{s:2,p:71},{s:2,p:70},{s:1,p:48},{s:1,p:59},{s:2,p:79},{s:1,p:38},{s:2,p:64},{s:1,p:37}] },
-  { name:"YetiYara", th:12, attacksUsed:2, attacksTotal:2, stars:[3,3], destruction:[100,96], targets:["CoilStrike #5", "ToxicTail #4"], status:"complete", careerStars:470, avgDestruction:80.4, history:[{s:1,p:59},{s:3,p:96},{s:1,p:57},{s:2,p:70},{s:1,p:58},{s:3,p:96},{s:2,p:88},{s:3,p:100},{s:2,p:83},{s:3,p:97}] },
-  { name:"BowlerBecca", th:12, attacksUsed:1, attacksTotal:2, stars:[1], destruction:[38], targets:["AdderAce #3"], status:"one-left", careerStars:290, avgDestruction:50.6, history:[{s:2,p:75},{s:1,p:51},{s:1,p:57},{s:1,p:36},{s:1,p:33},{s:2,p:73},{s:2,p:69},{s:1,p:39},{s:1,p:45},{s:1,p:28}] },
-  { name:"GoblinGary", th:11, attacksUsed:0, attacksTotal:2, stars:[], destruction:[], targets:[], status:"missed", careerStars:214, avgDestruction:52.0, history:[{s:2,p:72},{s:1,p:39},{s:2,p:61},{s:1,p:44},{s:1,p:55},{s:1,p:44},{s:2,p:60},{s:1,p:44},{s:1,p:32},{s:2,p:69}] }
-];
-
-const shameList = [
-  { name:"WitchWendy", roast:"Logged in. Looked at the map. Logged off." },
-  { name:"SneakyGoblin", roast:"True to the name — nowhere to be found." },
-  { name:"GoblinGary", roast:"Forgot war existed. Again." },
-  { name:"BowlerBecca", roast:"38% and a single star. The base sends its regards." }
-];
-
-const tickerEvents = [
-  { i:"fire", t:"ChiefPix 3-starred Shadow Vipers #1" },
-  { i:"skull", t:"GoblinGary hasn't attacked — 2h left" },
-  { i:"crossedSwords", t:"MinerMike is attacking Shadow Vipers #9" },
-  { i:"trophy", t:"DragonDrew posted a fresh best: 100% destruction" },
-  { i:"brokenShield", t:"BowlerBecca 1-starred a TH12 — ouch" },
-  { i:"hourglass", t:"4 members still have attacks remaining" },
-  { i:"shield", t:"PropellerPerps lead by 4 stars" },
-  { i:"skull", t:"WitchWendy hasn't attacked — 2h left" },
-  { i:"fire", t:"YetiYara double 3-starred — clean sweep" },
-  { i:"skull", t:"SneakyGoblin hasn't attacked — 2h left" }
-];
-const TICKER_COLOR = { fire:"var(--ember)", skull:"var(--accent)", crossedSwords:"var(--gold)", brokenShield:"var(--accent)", hourglass:"var(--text-muted)", shield:"var(--secondary)" };
-
-const WAR_END = new Date(Date.now() + (2 * 3600 + 14 * 60 + 37) * 1000);
+const API_URL = "https://harvard-silly-tube-lime.trycloudflare.com/api/currentwar";
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 2000;
 const URGENT_MS = 6 * 3600 * 1000;
-let warHasEnded = false;
 
-const bestStars = m => m.stars.length ? Math.max(...m.stars) : 0;
-const bestDestruction = m => m.destruction.length ? Math.max(...m.destruction) : 0;
+let round = null;
+let localWarEnded = false;
+
+function parseCoCTime(ts){
+  const m = ts.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})\.(\d{3})Z$/);
+  if (!m) return new Date(NaN);
+  const [, y, mo, d, h, mi, s, ms] = m;
+  return new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}.${ms}Z`);
+}
 
 function starRow(count, total){
   total = total || 3;
@@ -357,83 +306,99 @@ function thImage(level){
   return `assets/coc/th${level === 1 ? 2 : level}.png`;
 }
 
+function bestAttack(m){
+  return m.attacks && m.attacks.length ? m.attacks[0] : null;
+}
+
+function memberStatus(m){
+  if (bestAttack(m)) return "complete";
+  return localWarEnded ? "missed" : "pending";
+}
+
 function warRankMap(){
-  const scored = members.map((m, idx) => ({
-    idx,
-    totalStars: m.stars.reduce((s, v) => s + v, 0),
-    totalDmg: m.destruction.reduce((s, v) => s + v, 0)
-  }));
-  scored.sort((a, b) => b.totalStars - a.totalStars || b.totalDmg - a.totalDmg);
+  const scored = round.members.map((m, idx) => {
+    const a = bestAttack(m);
+    return { idx, stars: a ? a.stars : 0, dmg: a ? a.destructionPercentage : 0 };
+  });
+  scored.sort((a, b) => b.stars - a.stars || b.dmg - a.dmg);
   const rankMap = {};
   scored.forEach((s, i) => { rankMap[s.idx] = i + 1; });
   return rankMap;
 }
 
-const STATUS_LABEL = { complete: "Complete", "one-left": "1 Left", attacking: "Attacking…", missed: "Missed" };
+function renderHeader(){
+  document.getElementById("clanNameTop").textContent = round.clanName || CLAN_NAME;
+  document.getElementById("clanTagTop").textContent = CLAN_TAG;
+  const badge = document.getElementById("warStateBadge");
+  if (round.state === "preparation") {
+    badge.innerHTML = icon("hourglass") + " PREPARATION DAY";
+  } else if (round.state === "inWar") {
+    badge.innerHTML = icon("crossedSwords") + " BATTLE DAY";
+  } else {
+    badge.innerHTML = icon("shield") + " WAR ENDED";
+  }
+  document.getElementById("shameHeading").innerHTML = icon("skull") + " Wall of Shame";
+}
 
 function renderSummary(){
-  const usStars = members.reduce((s, m) => s + bestStars(m), 0);
-  const usMax = members.length * 3;
-  const usDestruction = members.reduce((s, m) => s + bestDestruction(m), 0) / members.length;
-  const usAttacksUsed = members.reduce((s, m) => s + m.attacksUsed, 0);
-  const usAttacksTotal = members.length * 2;
-  const usLeading = usStars >= opponent.stars;
+  const opp = round.opponent;
+  const usStars = round.starsGained;
+  const themStars = opp.starsGained;
+  const usAttacksUsed = round.attacksCompleted;
+  const themAttacksUsed = opp.attacksCompleted;
+  const attacksTotal = round.totalAttacks;
+  const maxStars = attacksTotal * 3;
+  const usLeading = usStars >= themStars;
 
-  const totalStars = usStars + opponent.stars;
+  const totalStars = usStars + themStars;
   const rawShare = totalStars > 0 ? (usStars / totalStars) : 0.5;
   const usPct = Math.min(68, Math.max(32, rawShare * 100)).toFixed(2);
   const themPct = (100 - usPct).toFixed(2);
   const tiltDeg = usLeading ? 16 : -16;
 
-  document.getElementById("boardSub").textContent = `${usAttacksUsed}/${usAttacksTotal} attacks used`;
+  document.getElementById("boardSub").textContent = `${usAttacksUsed}/${attacksTotal} attacks used`;
 
   document.getElementById("warSummary").innerHTML = `
     <div class="clash-half us ${usLeading ? "leading" : ""}" style="flex-basis:${usPct}%">
-      <div class="team-name">${CLAN_NAME} ${usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
-      <div class="team-stars">${usStars}<img src="assets/coc/star.png" alt="star"><small>/${usMax}</small></div>
-      <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${usDestruction.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${usAttacksUsed}/${usAttacksTotal}</span></div>
+      <div class="team-name">${round.clanName} ${usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
+      <div class="team-stars">${usStars}<img src="assets/coc/star.png" alt="star"><small>/${maxStars}</small></div>
+      <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${round.totalDestructionPercentage.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${usAttacksUsed}/${attacksTotal}</span></div>
     </div>
     <div class="clash-seam" style="left:${usPct}%">
       <img class="seam-sword" src="assets/coc/sword.png" alt="" style="transform:translate(calc(-50% - 26px), -50%) rotate(${tiltDeg}deg)">
       <div class="vs-mark"><span class="vs-v">V</span><span class="vs-s">S</span></div>
     </div>
     <div class="clash-half them ${!usLeading ? "leading" : ""}" style="flex-basis:${themPct}%">
-      <div class="team-name">${opponent.name} ${!usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
-      <div class="team-stars">${opponent.stars}<img src="assets/coc/star.png" alt="star"><small>/${opponent.maxStars}</small></div>
-      <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${opponent.destruction.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${opponent.attacksUsed}/${opponent.attacksTotal}</span></div>
+      <div class="team-name">${opp.name} ${!usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
+      <div class="team-stars">${themStars}<img src="assets/coc/star.png" alt="star"><small>/${maxStars}</small></div>
+      <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${opp.totalDestructionPercentage.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${themAttacksUsed}/${attacksTotal}</span></div>
     </div>`;
 }
 
 function renderBoard(){
   const rankMap = warRankMap();
-  const order = members.map((_, i) => i).sort((a, b) => rankMap[a] - rankMap[b]);
+  const order = round.members.map((_, i) => i).sort((a, b) => rankMap[a] - rankMap[b]);
   document.getElementById("boardBody").innerHTML = order.map(i => {
-    const m = members[i];
+    const m = round.members[i];
     const rank = rankMap[i];
     const rankHTML = rank <= 3
       ? `<span class="card-rank top3 rank-${rank}"><img class="rank-star" src="assets/coc/star.png" alt=""><span class="rank-num">${rank}</span></span>`
       : `<span class="card-rank">${rank}</span>`;
 
-    const rows = Array.from({ length: m.attacksTotal }, (_, r) => {
-      const used = r < m.attacksUsed;
-      const missed = !used && warHasEnded;
-      const pipWrap = `<span class="sword-pip-wrap"><img class="sword-pip-sm ${used ? "used" : ""}" src="assets/coc/sword.png" alt="">${missed ? '<span class="miss-x">✕</span>' : ""}</span>`;
-      if (used) {
-        return `<div class="attack-row">${pipWrap}<div class="attack-info"><div class="attack-target">vs ${m.targets[r]}</div><div class="attack-line"><span class="card-stars">${starRow(m.stars[r])}</span><span class="card-dmg">${m.destruction[r]}%</span></div></div></div>`;
-      }
-      return `<div class="attack-row empty">${pipWrap}</div>`;
-    }).join("");
+    const status = memberStatus(m);
+    const attack = bestAttack(m);
+    const pipWrap = `<span class="sword-pip-wrap"><img class="sword-pip-sm ${attack ? "used" : ""}" src="assets/coc/sword.png" alt="">${status === "missed" ? '<span class="miss-x">✕</span>' : ""}</span>`;
+    const row = attack
+      ? `<div class="attack-row">${pipWrap}<div class="attack-info"><div class="attack-target">vs ${attack.defenderName} #${attack.defenderMapPosition}</div><div class="attack-line"><span class="card-stars">${starRow(attack.stars)}</span><span class="card-dmg">${attack.destructionPercentage}%</span></div></div></div>`
+      : `<div class="attack-row empty">${pipWrap}</div>`;
 
-    const caption = m.status === "attacking" ? `<div class="card-caption live">Attacking now</div>` : "";
-
-    return `<div class="member-card ${m.status}">
+    return `<div class="member-card ${status}">
       ${rankHTML}
       <div class="card-top">
-        <img class="card-th" src="${thImage(m.th)}" width="46" height="46" alt="TH${m.th}">
+        <img class="card-th" src="${thImage(m.townhallLevel)}" width="46" height="46" alt="TH${m.townhallLevel}">
         <span class="card-name">${m.name}</span>
       </div>
-      <div class="attack-rows">${rows}</div>
-      ${caption}
+      <div class="attack-rows">${row}</div>
     </div>`;
   }).join("");
 }
@@ -441,56 +406,29 @@ function renderBoard(){
 let sliderIndex = 0;
 let sliderTimer = null;
 
-function graphSVG(history){
-  const w = 320, hgt = 170, padL = 30, padR = 10, padT = 14, padB = 22;
-  const innerW = w - padL - padR, innerH = hgt - padT - padB;
-  const stepX = innerW / (history.length - 1);
-  const pts = history.map((pt, i) => ({
-    x: padL + i * stepX,
-    y: padT + innerH * (1 - pt.p / 100),
-    s: pt.s
-  }));
-  const linePath = pts.map((pt, i) => (i === 0 ? "M" : "L") + pt.x.toFixed(1) + " " + pt.y.toFixed(1)).join(" ");
-  const dots = pts.map(pt => `
-    <g transform="translate(${pt.x.toFixed(1)},${pt.y.toFixed(1)})">
-      <image href="assets/coc/star.png" x="-9" y="-9" width="18" height="18"/>
-      <text x="0" y="1" text-anchor="middle" dominant-baseline="middle" class="graph-star-num">${pt.s}</text>
-    </g>`).join("");
-  const yTicks = [0, 20, 40, 60, 80, 100].map(pct => {
-    const y = padT + innerH * (1 - pct / 100);
-    return `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${w - padR}" y2="${y.toFixed(1)}" class="graph-gridline"/>
-      <text x="${padL - 6}" y="${y.toFixed(1)}" text-anchor="end" dominant-baseline="middle" class="graph-axis-label">${pct}%</text>`;
-  }).join("");
-  const xLabels = pts.map((pt, i) => `<text x="${pt.x.toFixed(1)}" y="${hgt - 4}" class="graph-x-label">A${i + 1}</text>`).join("");
-  return `<svg class="attack-graph-svg" viewBox="0 0 ${w} ${hgt}">
-    ${yTicks}
-    <path d="${linePath}" class="graph-line" fill="none"/>
-    ${dots}
-    ${xLabels}
-  </svg>`;
-}
+function spotlightHTML(m){
+  const attack = bestAttack(m);
+  const detail = attack
+    ? `<div class="slide-stats">
+        <div class="stat-block"><img src="assets/coc/star.png" alt=""><span class="num">${attack.stars}</span></div>
+        <div class="stat-block"><img src="assets/coc/destruction.png" alt=""><span class="num">${attack.destructionPercentage}%</span></div>
+      </div>
+      <div><span class="lbl hist-lbl">This Round's Attack</span><span class="lbl">vs ${attack.defenderName} #${attack.defenderMapPosition}</span></div>`
+    : `<div class="lbl hist-lbl">${localWarEnded ? "No attack made this round" : "Hasn't attacked yet"}</div>`;
 
-function slideHTML(m){
   return `
     <div class="slide-top">
       <span class="slide-name">${m.name}</span>
-      <img class="card-th" src="${thImage(m.th)}" width="40" height="40" alt="TH${m.th}">
+      <img class="card-th" src="${thImage(m.townhallLevel)}" width="40" height="40" alt="TH${m.townhallLevel}">
     </div>
-    <div class="slide-stats">
-      <div class="stat-block"><img src="assets/coc/star.png" alt=""><span class="num">${m.careerStars.toLocaleString()}</span></div>
-      <div class="stat-block"><img src="assets/coc/destruction.png" alt=""><span class="num">${m.avgDestruction.toFixed(0)}%</span></div>
-    </div>
-    <div>
-      <span class="lbl hist-lbl">Last 10 Attacks</span>
-      ${graphSVG(m.history)}
-    </div>`;
+    ${detail}`;
 }
 
 function renderSlide(i, skipFade){
-  sliderIndex = (i + members.length) % members.length;
+  sliderIndex = (i + round.members.length) % round.members.length;
   const card = document.getElementById("sliderCard");
   const fill = () => {
-    card.innerHTML = slideHTML(members[sliderIndex]);
+    card.innerHTML = spotlightHTML(round.members[sliderIndex]);
     card.classList.remove("fade");
     updateDots();
   };
@@ -504,7 +442,7 @@ function prevSlide(){ renderSlide(sliderIndex - 1); }
 
 function renderDotsShell(){
   const dots = document.getElementById("sliderDots");
-  dots.innerHTML = members.map((_, i) => `<span class="dot" data-i="${i}"></span>`).join("");
+  dots.innerHTML = round.members.map((_, i) => `<span class="dot" data-i="${i}"></span>`).join("");
   dots.querySelectorAll(".dot").forEach(d => {
     d.addEventListener("click", () => { renderSlide(parseInt(d.dataset.i, 10)); resetAutoSlide(); });
   });
@@ -517,61 +455,93 @@ function updateDots(){
 function startAutoSlide(){ sliderTimer = setInterval(nextSlide, 7000); }
 function resetAutoSlide(){ clearInterval(sliderTimer); startAutoSlide(); }
 
-function renderShame(){
-  document.getElementById("shameList").innerHTML = shameList.map((s, i) => {
-    const m = members.find(x => x.name === s.name);
-    const stat = m.attacksUsed === 0 ? `${m.attacksUsed}/${m.attacksTotal} attacks` : `${bestStars(m)}★ · ${bestDestruction(m)}%`;
-    return `<div class="shame-item" style="animation-delay:${(i * 0.12).toFixed(2)}s">
-      <div class="shame-top">
-        <span class="shame-name"><img src="${thImage(m.th)}" alt="TH${m.th}"> ${m.name}</span>
-        <span class="shame-stat">${stat}</span>
-      </div>
-      <div class="shame-roast">"${s.roast}"</div>
-    </div>`;
-  }).join("");
+function renderSpotlight(){
+  renderDotsShell();
+  renderSlide(0, true);
+  startAutoSlide();
+  document.getElementById("prevBtn").addEventListener("click", () => { prevSlide(); resetAutoSlide(); });
+  document.getElementById("nextBtn").addEventListener("click", () => { nextSlide(); resetAutoSlide(); });
 }
 
-function renderTicker(){
-  const items = tickerEvents.map(e => {
-    const media = e.i === "trophy"
-      ? `<img src="assets/coc/trophy.png" alt="">`
-      : icon(e.i, TICKER_COLOR[e.i]);
-    return `<span class="ticker-item">${media}${e.t}</span>`;
-  });
-  const loop = items.join('<span class="dot-sep">•</span>');
-  document.getElementById("tickerTrack").innerHTML = loop + '<span class="dot-sep">•</span>' + loop + '<span class="dot-sep">•</span>' + loop + '<span class="dot-sep">•</span>';
+function renderShame(){
+  // No real shame-worthy data source yet (v1 scope cut) - stays empty.
+  document.getElementById("shameList").innerHTML = "";
+}
+
+function renderEmptyState(message){
+  document.getElementById("clanNameTop").textContent = CLAN_NAME;
+  document.getElementById("clanTagTop").textContent = CLAN_TAG;
+  document.getElementById("warStateBadge").innerHTML = icon("hourglass") + " NO ACTIVE ROUND";
+  document.getElementById("shameHeading").innerHTML = icon("skull") + " Wall of Shame";
+  document.getElementById("countdown").textContent = "--:--:--";
+  document.getElementById("warSummary").innerHTML = `<div class="empty-state">${message}</div>`;
+  document.getElementById("boardSub").textContent = "";
+  document.getElementById("boardBody").innerHTML = `<div class="empty-state">${message}</div>`;
+  document.getElementById("sliderCard").innerHTML = `<div class="empty-state">${message}</div>`;
+  document.getElementById("sliderDots").innerHTML = "";
+  document.getElementById("shameList").innerHTML = "";
 }
 
 function updateCountdown(){
-  const diff = WAR_END - new Date();
+  const target = round.state === "preparation" ? parseCoCTime(round.startTime) : parseCoCTime(round.endTime);
+  const diff = target - new Date();
   const el = document.getElementById("countdown");
   const clamped = Math.max(diff, 0);
   const h = Math.floor(clamped / 3600000);
-  const m = Math.floor((clamped % 3600000) / 60000);
+  const mi = Math.floor((clamped % 3600000) / 60000);
   const s = Math.floor((clamped % 60000) / 1000);
-  el.textContent = [h, m, s].map(n => String(n).padStart(2, "0")).join(":");
+  el.textContent = [h, mi, s].map(n => String(n).padStart(2, "0")).join(":");
   el.classList.toggle("urgent", clamped < URGENT_MS);
-  if (clamped <= 0 && !warHasEnded) {
-    warHasEnded = true;
+  if (clamped <= 0 && round.state === "inWar" && !localWarEnded) {
+    localWarEnded = true;
     renderBoard();
   }
 }
 
-document.getElementById("clanNameTop").textContent = CLAN_NAME;
-document.getElementById("clanTagTop").textContent = CLAN_TAG;
-document.getElementById("warStateBadge").innerHTML = icon("crossedSwords") + " BATTLE DAY";
-document.getElementById("shameHeading").innerHTML = icon("skull") + " Wall of Shame";
-renderSummary();
-renderBoard();
-renderDotsShell();
-renderSlide(0, true);
-startAutoSlide();
-renderShame();
-renderTicker();
-updateCountdown();
-setInterval(updateCountdown, 1000);
-document.getElementById("prevBtn").addEventListener("click", () => { prevSlide(); resetAutoSlide(); });
-document.getElementById("nextBtn").addEventListener("click", () => { nextSlide(); resetAutoSlide(); });
+async function fetchWarData(){
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(API_URL);
+      if (response.ok) {
+        return await response.json();
+      }
+      console.error(`War data request failed (attempt ${attempt}/${MAX_RETRIES}): HTTP ${response.status}`);
+    } catch (err) {
+      console.error(`War data request errored (attempt ${attempt}/${MAX_RETRIES}):`, err);
+    }
+    if (attempt < MAX_RETRIES) {
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+    }
+  }
+  return null;
+}
+
+async function init(){
+  const data = await fetchWarData();
+  if (!data) {
+    renderEmptyState("Couldn't reach the war room backend. Check your connection and refresh.");
+    return;
+  }
+
+  round = data.currentRound || null;
+  if (!round) {
+    renderEmptyState("No active war round right now.");
+    return;
+  }
+
+  localWarEnded = round.state === "warEnded";
+  renderHeader();
+  renderSummary();
+  renderBoard();
+  renderSpotlight();
+  renderShame();
+  updateCountdown();
+  if (round.state !== "warEnded") {
+    setInterval(updateCountdown, 1000);
+  }
+}
+
+init();
 </script>
 </body>
 </html>

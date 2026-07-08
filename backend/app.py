@@ -118,6 +118,12 @@ def get_cwl_war_data(data):
         "starsGained": us["stars"],
         "totalDestructionPercentage": us["destructionPercentage"],
         "members": members,
+        "opponent": {
+            "name": opponent["name"],
+            "attacksCompleted": opponent["attacks"],
+            "starsGained": opponent["stars"],
+            "totalDestructionPercentage": opponent["destructionPercentage"],
+        },
     }
 
 

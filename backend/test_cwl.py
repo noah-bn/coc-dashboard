@@ -12,7 +12,7 @@ from unittest.mock import patch
 os.environ.setdefault("COC_API_TOKEN", "test-token")
 os.environ.setdefault("CLAN_TAG", "2QYCRRVU8")  # PropellerPerps, matches SAMPLE_WAR below
 
-from app import format_cwl_league_data, get_cwl_war_data  # noqa: E402
+from app import format_cwl_league_data, get_cwl_war_data, get_regular_war_data  # noqa: E402
 
 SAMPLE_WAR = json.loads(r"""
 {
@@ -193,6 +193,8 @@ def test_get_cwl_war_data():
         "totalDestructionPercentage", result["totalDestructionPercentage"], 58.86666666666667
     )
     ok &= check("member count", len(result["members"]), 15)
+    ok &= check("warType", result["warType"], "cwl")
+    ok &= check("attacksPerMember", result["attacksPerMember"], 1)
     ok &= check("opponent name", result["opponent"]["name"], "Element Clan :)")
     ok &= check("opponent attacksCompleted", result["opponent"]["attacksCompleted"], 15)
     ok &= check("opponent starsGained", result["opponent"]["starsGained"], 45)
@@ -218,13 +220,16 @@ def test_get_cwl_war_data():
 def test_format_cwl_league_data():
     print("--- format_cwl_league_data ---")
     rounds = [
-        {"warTags": ["#0", "#0"]},  # not paired yet, must be skipped
+        {"warTags": ["#0", "#0"]},  # not paired yet - becomes a placeholder
         {"warTags": ["#OURWAR", "#SHOULDNOTBEFETCHED"]},
+        {"warTags": ["#NOTFETCHABLE", "#ALSONOTFETCHABLE"]},  # exists but 404s
     ]
 
     def fake_get(url, headers=None):
         if "OURWAR" in url:
             return _FakeResponse(SAMPLE_WAR)
+        if "NOTFETCHABLE" in url:
+            return _FakeResponse(None, status_code=404)
         raise AssertionError(
             f"fetched {url} after already finding our war this round - break didn't work"
         )
@@ -233,21 +238,94 @@ def test_format_cwl_league_data():
         result = format_cwl_league_data(rounds)
 
     ok = True
-    ok &= check("rounds found", len(result), 1)
-    ok &= check("found round clanName", result[0]["clanName"], "PropellerPerps")
+    ok &= check("rounds returned (every round gets an entry)", len(result), 3)
+    ok &= check("unpaired round state", result[0]["state"], "notStarted")
+    ok &= check("found round clanName", result[1]["clanName"], "PropellerPerps")
+    ok &= check("unfetchable round state", result[2]["state"], "notStarted")
+    return ok
+
+
+SAMPLE_REGULAR_WAR = json.loads(r"""
+{
+  "state": "inWar",
+  "teamSize": 3,
+  "attacksPerMember": 2,
+  "preparationStartTime": "20260707T113736.000Z",
+  "startTime": "20260708T103736.000Z",
+  "endTime": "20260709T103736.000Z",
+  "clan": {
+    "tag": "#2QYCRRVU8",
+    "name": "PropellerPerps",
+    "attacks": 3,
+    "stars": 7,
+    "destructionPercentage": 80.0,
+    "members": [
+      {"tag": "#AAA1", "name": "TwoAttacks", "townhallLevel": 16, "mapPosition": 1,
+       "attacks": [
+         {"attackerTag": "#AAA1", "defenderTag": "#BBB2", "stars": 3, "destructionPercentage": 100, "order": 1, "duration": 90},
+         {"attackerTag": "#AAA1", "defenderTag": "#BBB3", "stars": 2, "destructionPercentage": 80, "order": 4, "duration": 110}
+       ]},
+      {"tag": "#AAA2", "name": "OneAttack", "townhallLevel": 15, "mapPosition": 2,
+       "attacks": [
+         {"attackerTag": "#AAA2", "defenderTag": "#BBB1", "stars": 2, "destructionPercentage": 70, "order": 2, "duration": 100}
+       ]},
+      {"tag": "#AAA3", "name": "NoAttacksYet", "townhallLevel": 14, "mapPosition": 3}
+    ]
+  },
+  "opponent": {
+    "tag": "#OPPTAG",
+    "name": "Some Enemy Clan",
+    "attacks": 1,
+    "stars": 2,
+    "destructionPercentage": 60.0,
+    "members": [
+      {"tag": "#BBB1", "name": "EnemyOne", "townhallLevel": 15, "mapPosition": 1},
+      {"tag": "#BBB2", "name": "EnemyTwo", "townhallLevel": 16, "mapPosition": 2},
+      {"tag": "#BBB3", "name": "EnemyThree", "townhallLevel": 14, "mapPosition": 3}
+    ]
+  }
+}
+""")
+
+
+def test_get_regular_war_data():
+    print("--- get_regular_war_data ---")
+    result = get_regular_war_data(SAMPLE_REGULAR_WAR)
+    ok = True
+    ok &= check("warType", result["warType"], "regular")
+    ok &= check("attacksPerMember", result["attacksPerMember"], 2)
+    ok &= check("totalAttacks (teamSize * attacksPerMember)", result["totalAttacks"], 6)
+    ok &= check("clanName", result["clanName"], "PropellerPerps")
+
+    two_attacks = next(m for m in result["members"] if m["name"] == "TwoAttacks")
+    ok &= check("TwoAttacks attack count", len(two_attacks["attacks"]), 2)
+    ok &= check("TwoAttacks 2nd defenderName", two_attacks["attacks"][1]["defenderName"], "EnemyThree")
+    ok &= check("TwoAttacks 2nd defenderMapPosition", two_attacks["attacks"][1]["defenderMapPosition"], 3)
+
+    one_attack = next(m for m in result["members"] if m["name"] == "OneAttack")
+    ok &= check("OneAttack attack count", len(one_attack["attacks"]), 1)
+
+    no_attacks = next(m for m in result["members"] if m["name"] == "NoAttacksYet")
+    ok &= check("NoAttacksYet attacks (member has no 'attacks' key at all)", no_attacks["attacks"], [])
+
     return ok
 
 
 class _FakeResponse:
-    def __init__(self, payload):
+    def __init__(self, payload, status_code=200):
         self._payload = payload
+        self.status_code = status_code
 
     def json(self):
         return self._payload
 
 
 if __name__ == "__main__":
-    results = [test_get_cwl_war_data(), test_format_cwl_league_data()]
+    results = [
+        test_get_cwl_war_data(),
+        test_format_cwl_league_data(),
+        test_get_regular_war_data(),
+    ]
     print()
     if all(results):
         print("All checks passed.")

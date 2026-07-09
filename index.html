@@ -1,547 +1,1839 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PropellerPerps — War Room</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Russo+One&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#201F1D;
-  --surface:#2B2A27;
-  --surface-wood:#332821;
-  --gold:#F0B400; --gold-rgb:240,180,0;
-  --gold-bright:#FCD848;
-  --accent:#CC1818; --accent-rgb:204,24,24;
-  --secondary:#5B9C3D; --secondary-rgb:91,156,61;
-  --ember:#E48400; --ember-rgb:228,132,0;
-  --text:#F0E4CC;
-  --text-muted:#A89C82;
-}
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Rajdhani',sans-serif;
-  min-height:100vh;
-  position:relative;
-}
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-1;
-  pointer-events:none;
-  opacity:.05;
-  background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><defs><g id="sw"><polygon points="0,-13 3.2,4 -3.2,4"/><rect x="-6.4" y="3" width="12.8" height="2.4"/><rect x="-1.5" y="5.4" width="3" height="6.5"/></g></defs><g fill="%23F0B400"><use href="%23sw" transform="translate(45,45) rotate(45) scale(1.7)"/><use href="%23sw" transform="translate(45,45) rotate(-45) scale(1.7)"/><use href="%23sw" transform="translate(135,135) rotate(45) scale(1.7)"/><use href="%23sw" transform="translate(135,135) rotate(-45) scale(1.7)"/></g></svg>');
-  background-size:180px 180px;
-}
-h1,h2,h3{margin:0;}
-button{font-family:inherit;}
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PropellerPerps — War Room</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Bangers&family=Russo+One&family=Rajdhani:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --bg: #201f1d;
+                --surface: #2b2a27;
+                --surface-wood: #332821;
+                --gold: #f0b400;
+                --gold-rgb: 240, 180, 0;
+                --gold-bright: #fcd848;
+                --accent: #cc1818;
+                --accent-rgb: 204, 24, 24;
+                --secondary: #5b9c3d;
+                --secondary-rgb: 91, 156, 61;
+                --ember: #e48400;
+                --ember-rgb: 228, 132, 0;
+                --text: #f0e4cc;
+                --text-muted: #a89c82;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: "Rajdhani", sans-serif;
+                min-height: 100vh;
+                position: relative;
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                z-index: -1;
+                pointer-events: none;
+                opacity: 0.05;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><defs><g id="sw"><polygon points="0,-13 3.2,4 -3.2,4"/><rect x="-6.4" y="3" width="12.8" height="2.4"/><rect x="-1.5" y="5.4" width="3" height="6.5"/></g></defs><g fill="%23F0B400"><use href="%23sw" transform="translate(45,45) rotate(45) scale(1.7)"/><use href="%23sw" transform="translate(45,45) rotate(-45) scale(1.7)"/><use href="%23sw" transform="translate(135,135) rotate(45) scale(1.7)"/><use href="%23sw" transform="translate(135,135) rotate(-45) scale(1.7)"/></g></svg>');
+                background-size: 180px 180px;
+            }
+            h1,
+            h2,
+            h3 {
+                margin: 0;
+            }
+            button {
+                font-family: inherit;
+            }
 
-.textured{background-image:url('assets/noise.png');background-size:220px 220px;background-blend-mode:soft-light;}
+            .textured {
+                background-image: url("assets/noise.png");
+                background-size: 220px 220px;
+                background-blend-mode: soft-light;
+            }
 
-/* Display type — CoC-style outlined/shadowed headline treatment */
-.clan-name,.countdown,.panel h2,.team-name,.team-stars,.slide-name,.stat-block .num,.vs-mark span{
-  font-family:'Bangers',cursive;
-  letter-spacing:1px;
-  text-shadow:2px 2px 0 rgba(0,0,0,.55), 0 3px 8px rgba(0,0,0,.35);
-  -webkit-text-stroke:0.4px rgba(0,0,0,.35);
-}
+            /* Display type — CoC-style outlined/shadowed headline treatment */
+            .clan-name,
+            .countdown,
+            .panel h2,
+            .team-name,
+            .team-stars,
+            .slide-name,
+            .stat-block .num {
+                font-family: "Bangers", cursive;
+                letter-spacing: 1px;
+                text-shadow:
+                    2px 2px 0 rgba(0, 0, 0, 0.55),
+                    0 3px 8px rgba(0, 0, 0, 0.35);
+                -webkit-text-stroke: 0.4px rgba(0, 0, 0, 0.35);
+            }
 
-.icon{display:inline-flex;align-items:center;justify-content:center;}
-.icon svg{width:1em;height:1em;}
+            .icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .icon svg {
+                width: 1em;
+                height: 1em;
+            }
 
-.wrap{max-width:1760px;margin:0 auto;padding:24px 32px 130px;}
+            .wrap {
+                max-width: 1760px;
+                margin: 0 auto;
+                padding: 24px 32px 130px;
+            }
 
-/* Top bar */
-.topbar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);padding:14px 24px;margin-bottom:20px;gap:16px;flex-wrap:wrap;}
-.topbar-side{display:flex;align-items:center;gap:12px;flex:1;min-width:180px;}
-.topbar-right{justify-content:flex-end;}
-.topbar-center{display:flex;align-items:center;gap:18px;justify-content:center;flex:1.2;min-width:260px;}
-.clan-name{font-size:19px;}
-.war-state{font-family:'Russo One';font-size:12.5px;letter-spacing:.5px;padding:8px 16px;border-radius:3px;background:rgba(var(--accent-rgb),0.14);border:1px solid rgba(var(--accent-rgb),0.5);color:#ff9c86;white-space:nowrap;display:flex;align-items:center;gap:6px;}
-.countdown{font-size:25px;color:var(--gold);font-variant-numeric:tabular-nums;transition:color .3s ease;}
-.countdown.urgent{color:var(--accent);animation:blink 1s step-start infinite;}
-.clan-tag{display:flex;align-items:center;font-size:12px;letter-spacing:.4px;padding:7px 14px;border-radius:3px;background:rgba(255,255,255,0.03);color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+            /* Top bar */
+            .topbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: var(--surface);
+                padding: 14px 24px;
+                margin-bottom: 20px;
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+            .topbar-side {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex: 1;
+                min-width: 180px;
+            }
+            .topbar-right {
+                justify-content: flex-end;
+            }
+            .topbar-center {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                justify-content: center;
+                flex: 1.2;
+                min-width: 260px;
+            }
+            .clan-name {
+                font-size: 19px;
+            }
+            .war-state {
+                font-family: "Russo One";
+                font-size: 12.5px;
+                letter-spacing: 0.5px;
+                padding: 8px 16px;
+                border-radius: 3px;
+                background: rgba(var(--accent-rgb), 0.14);
+                border: 1px solid rgba(var(--accent-rgb), 0.5);
+                color: #ff9c86;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .countdown {
+                font-size: 25px;
+                color: var(--gold);
+                font-variant-numeric: tabular-nums;
+                transition: color 0.3s ease;
+            }
+            .countdown.urgent {
+                color: var(--accent);
+                animation: blink 1s step-start infinite;
+            }
+            .clan-tag {
+                display: flex;
+                align-items: center;
+                font-size: 12px;
+                letter-spacing: 0.4px;
+                padding: 7px 14px;
+                border-radius: 3px;
+                background: rgba(255, 255, 255, 0.03);
+                color: var(--text-muted);
+                white-space: nowrap;
+                font-variant-numeric: tabular-nums;
+            }
+            .last-updated {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 12px;
+                letter-spacing: 0.4px;
+                color: var(--text-muted);
+                white-space: nowrap;
+                font-variant-numeric: tabular-nums;
+            }
+            .last-updated-icon {
+                font-size: 13px;
+                line-height: 1;
+            }
 
-/* Clash / VS panel */
-.clash-panel{position:relative;display:flex;overflow:hidden;min-height:210px;margin-bottom:20px;background:var(--surface);}
-.clash-half{flex:0 0 auto;position:relative;z-index:0;padding:22px 40px;display:flex;flex-direction:column;justify-content:space-between;transition:flex-basis 1s cubic-bezier(.2,.7,.3,1);}
-.clash-half.us{clip-path:polygon(0 0,100% 0,calc(100% - 55px) 14%,calc(100% - 15px) 28%,calc(100% - 60px) 42%,calc(100% - 20px) 56%,calc(100% - 65px) 70%,calc(100% - 25px) 85%,calc(100% - 70px) 100%,0 100%);background:rgba(var(--gold-rgb),0.10);margin-right:-46px;padding-right:120px;}
-.clash-half.them{clip-path:polygon(70px 0%,100% 0%,100% 100%,0% 100%,55px 86%,15px 72%,60px 58%,20px 44%,65px 30%,25px 15%);background:rgba(240,228,204,0.05);padding-left:120px;}
-.clash-half.us.leading{background:rgba(var(--gold-rgb),0.22);}
-.clash-half.them.leading{background:rgba(var(--accent-rgb),0.18);}
-.clash-seam{position:absolute;top:50%;z-index:5;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;pointer-events:none;transition:left 1s cubic-bezier(.2,.7,.3,1);}
-.seam-sword{position:absolute;left:50%;top:50%;width:52px;height:auto;z-index:2;transition:transform 1s cubic-bezier(.2,.7,.3,1);filter:drop-shadow(2px 3px 0 rgba(0,0,0,.5));}
-.vs-mark{position:relative;width:58px;height:58px;z-index:3;transform:translateX(36px);}
-.vs-mark span{position:absolute;font-size:32px;color:var(--gold);line-height:1;}
-.vs-mark .vs-v{top:-2px;left:-4px;}
-.vs-mark .vs-s{top:22px;left:22px;}
-.tag{font-size:10px;background:rgba(var(--gold-rgb),0.18);color:var(--gold);padding:3px 8px;border-radius:3px;letter-spacing:.5px;font-family:'Rajdhani';-webkit-text-stroke:0;text-shadow:none;}
-.team-name{font-size:23px;display:flex;align-items:center;gap:8px;}
-.team-stars{font-size:30px;color:var(--gold);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px;}
-.team-stars img{width:24px;height:24px;}
-.team-stars small{font-size:16px;color:var(--text-muted);font-family:'Rajdhani';font-weight:600;-webkit-text-stroke:0;text-shadow:none;}
-.team-meta{display:flex;justify-content:space-between;font-size:16px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums;max-width:300px;}
-.team-meta span{display:flex;align-items:center;gap:7px;}
-.team-meta img{width:auto;height:21px;object-fit:contain;}
+            /* Clash / VS panel */
+            .clash-panel {
+                position: relative;
+                overflow: hidden;
+                min-height: 210px;
+                margin-bottom: 20px;
+                background: var(--surface);
+            }
+            .territory-canvas {
+                position: absolute;
+                inset: 0;
+                z-index: 0;
+                display: block;
+                width: 100%;
+                height: 100%;
+                transition: opacity 0.2s ease;
+            }
+            .territory-canvas.dimmed {
+                opacity: 0.12;
+            }
+            .clash-content {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                z-index: 2;
+                padding: 22px 40px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            .clash-content.us {
+                left: 0;
+                align-items: flex-start;
+            }
+            .clash-content.them {
+                right: 0;
+                align-items: flex-end;
+            }
+            .tag {
+                font-size: 10px;
+                background: rgba(var(--gold-rgb), 0.18);
+                color: var(--gold);
+                padding: 3px 8px;
+                border-radius: 3px;
+                letter-spacing: 0.5px;
+                font-family: "Rajdhani";
+                -webkit-text-stroke: 0;
+                text-shadow: none;
+            }
+            .team-name {
+                font-size: 23px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .team-stars {
+                font-size: 30px;
+                color: var(--gold);
+                font-variant-numeric: tabular-nums;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .team-stars img {
+                width: 24px;
+                height: 24px;
+            }
+            .team-stars small {
+                font-size: 16px;
+                color: var(--text-muted);
+                font-family: "Rajdhani";
+                font-weight: 600;
+                -webkit-text-stroke: 0;
+                text-shadow: none;
+            }
+            .team-meta {
+                display: flex;
+                justify-content: space-between;
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--text-muted);
+                font-variant-numeric: tabular-nums;
+                min-width: 220px;
+                max-width: 300px;
+            }
+            .team-meta span {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+            }
+            .team-meta img {
+                width: auto;
+                height: 21px;
+                object-fit: contain;
+            }
 
-/* Layout */
-.main-grid{display:grid;grid-template-columns:1.85fr 1fr;gap:24px;align-items:start;}
-.sidebar{display:flex;flex-direction:column;gap:24px;}
-.panel{position:relative;overflow:hidden;z-index:0;background:var(--surface);padding:22px;}
-.panel-watermark{position:absolute;z-index:-1;pointer-events:none;color:var(--gold);}
-.panel-bg-art{position:absolute;z-index:-1;pointer-events:none;object-fit:contain;}
-.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;}
-.panel h2{font-size:16px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px;}
-.panel-sub{font-size:13px;color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap;}
-.empty-state{padding:24px 8px;text-align:center;color:var(--text-muted);font-size:14px;}
+            /* Layout */
+            .main-grid {
+                display: grid;
+                grid-template-columns: 1.85fr 1fr;
+                gap: 24px;
+                align-items: start;
+            }
+            .sidebar {
+                display: flex;
+                flex-direction: column;
+                gap: 24px;
+            }
+            .panel {
+                position: relative;
+                overflow: hidden;
+                z-index: 0;
+                background: var(--surface);
+                padding: 22px;
+            }
+            .panel-watermark {
+                position: absolute;
+                z-index: -1;
+                pointer-events: none;
+                color: var(--gold);
+            }
+            .panel-bg-art {
+                position: absolute;
+                z-index: -1;
+                pointer-events: none;
+                object-fit: contain;
+            }
+            .panel-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 14px;
+                gap: 10px;
+            }
+            .panel h2 {
+                font-size: 16px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: var(--gold);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .panel-sub {
+                font-size: 13px;
+                color: var(--text-muted);
+                font-variant-numeric: tabular-nums;
+                white-space: nowrap;
+            }
+            .empty-state {
+                padding: 24px 8px;
+                text-align: center;
+                color: var(--text-muted);
+                font-size: 14px;
+            }
 
-/* War board — card grid */
-.watermark-swords{right:6px;bottom:6px;width:120px;height:120px;opacity:.07;filter:grayscale(1);}
-.watermark-swords img{position:absolute;width:100%;}
-.watermark-swords img:first-child{transform:rotate(38deg);}
-.watermark-swords img:last-child{transform:rotate(-38deg) scaleX(-1);}
-.board-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.member-card{position:relative;background:var(--surface);padding:16px 14px 14px;display:flex;flex-direction:column;gap:12px;border-left:3px solid rgba(255,255,255,0.08);transition:transform .2s ease, background .2s ease;}
-.member-card:hover{transform:translateY(-2px);background:rgba(var(--gold-rgb),0.05);}
-.member-card.complete{border-left-color:rgba(var(--secondary-rgb),.6);}
-.member-card.missed{opacity:.55;border-left-color:rgba(var(--accent-rgb),.6);}
-.member-card.pending{border-left-color:rgba(var(--ember-rgb),.7);}
-.member-card.one-left{border-left-color:rgba(var(--gold-rgb),.6);}
-.card-rank{position:absolute;top:8px;right:10px;font-family:'Russo One';font-size:11px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;}
-.card-rank.top3{width:24px;height:24px;}
-.card-rank.top3 .rank-star{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.5));}
-.card-rank.top3.rank-2 .rank-star{filter:grayscale(1) brightness(1.4) drop-shadow(1px 1px 0 rgba(0,0,0,.5));}
-.card-rank.top3.rank-3 .rank-star{filter:sepia(1) saturate(3) hue-rotate(-25deg) brightness(.85) drop-shadow(1px 1px 0 rgba(0,0,0,.5));}
-.card-rank.top3 .rank-num{position:relative;z-index:1;font-size:10.5px;color:#2a1c06;font-weight:800;}
-.card-top{display:flex;align-items:center;gap:10px;}
-.card-th{flex-shrink:0;filter:drop-shadow(1px 2px 0 rgba(0,0,0,.4));}
-.card-name{font-weight:600;font-size:14px;letter-spacing:.2px;padding-right:24px;}
-.attack-rows{display:flex;flex-direction:column;gap:6px;}
-.attack-row{display:flex;align-items:center;gap:8px;}
-.attack-row.empty{opacity:.4;}
-.attack-info{display:flex;flex-direction:column;gap:2px;}
-.attack-target{font-size:10px;color:var(--text-muted);letter-spacing:.2px;}
-.attack-line{display:flex;align-items:center;gap:8px;}
-.sword-pip-wrap{position:relative;display:inline-flex;flex-shrink:0;}
-.sword-pip-sm{width:8px;height:auto;object-fit:contain;transform:rotate(16deg);filter:grayscale(1) brightness(.5) opacity(.5);transition:filter .2s ease;}
-.sword-pip-sm.used{filter:none;}
-.sword-pip-wrap .miss-x{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:14px;font-weight:800;text-shadow:0 0 2px rgba(0,0,0,.8);}
-.attack-row .card-stars{display:flex;gap:1px;}
-.star-icon{width:16px;height:16px;}
-.star-icon.dim{filter:grayscale(1) opacity(.28);}
-.attack-row .card-dmg{font-variant-numeric:tabular-nums;font-weight:600;font-size:12.5px;color:var(--text-muted);margin-left:auto;}
-.card-caption{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
-.card-caption.danger{color:var(--accent);}
+            /* War board — card grid */
+            .watermark-swords {
+                right: 6px;
+                bottom: 6px;
+                width: 120px;
+                height: 120px;
+                opacity: 0.07;
+                filter: grayscale(1);
+            }
+            .watermark-swords img {
+                position: absolute;
+                width: 100%;
+            }
+            .watermark-swords img:first-child {
+                transform: rotate(38deg);
+            }
+            .watermark-swords img:last-child {
+                transform: rotate(-38deg) scaleX(-1);
+            }
+            .board-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+            .member-card {
+                position: relative;
+                background: var(--surface);
+                padding: 16px 14px 14px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                border-left: 3px solid rgba(255, 255, 255, 0.08);
+                transition:
+                    transform 0.2s ease,
+                    background 0.2s ease;
+            }
+            .member-card:hover {
+                transform: translateY(-2px);
+                background: rgba(var(--gold-rgb), 0.05);
+            }
+            .member-card.complete {
+                border-left-color: rgba(var(--secondary-rgb), 0.6);
+            }
+            .member-card.missed {
+                opacity: 0.55;
+                border-left-color: rgba(var(--accent-rgb), 0.6);
+            }
+            .member-card.pending {
+                border-left-color: rgba(var(--ember-rgb), 0.7);
+            }
+            .member-card.partial {
+                border-left-color: rgba(var(--gold-rgb), 0.6);
+            }
+            .round-tabs {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-bottom: 14px;
+            }
+            .round-tab {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-family: inherit;
+                font-size: 12px;
+                letter-spacing: 0.3px;
+                color: var(--text-muted);
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                border-radius: 3px;
+                padding: 6px 12px;
+                cursor: pointer;
+                transition:
+                    background 0.15s ease,
+                    color 0.15s ease,
+                    border-color 0.15s ease;
+            }
+            .round-tab .icon {
+                width: 13px;
+                height: 13px;
+            }
+            .round-tab:hover {
+                color: var(--text);
+                border-color: rgba(var(--gold-rgb), 0.3);
+            }
+            .round-tab.active {
+                color: var(--gold);
+                background: rgba(var(--gold-rgb), 0.12);
+                border-color: rgba(var(--gold-rgb), 0.4);
+            }
+            .card-rank {
+                position: absolute;
+                top: 8px;
+                right: 10px;
+                font-family: "Russo One";
+                font-size: 11px;
+                color: var(--text-muted);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .card-rank.top3 {
+                width: 24px;
+                height: 24px;
+            }
+            .card-rank.top3 .rank-star {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.5));
+            }
+            .card-rank.top3.rank-2 .rank-star {
+                filter: grayscale(1) brightness(1.4)
+                    drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.5));
+            }
+            .card-rank.top3.rank-3 .rank-star {
+                filter: sepia(1) saturate(3) hue-rotate(-25deg) brightness(0.85)
+                    drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.5));
+            }
+            .card-rank.top3 .rank-num {
+                position: relative;
+                z-index: 1;
+                font-size: 10.5px;
+                color: #2a1c06;
+                font-weight: 800;
+            }
+            .card-top {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .card-th {
+                flex-shrink: 0;
+                filter: drop-shadow(1px 2px 0 rgba(0, 0, 0, 0.4));
+            }
+            .card-name {
+                font-weight: 600;
+                font-size: 14px;
+                letter-spacing: 0.2px;
+                padding-right: 24px;
+            }
+            .attack-rows {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .attack-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .attack-row.empty {
+                opacity: 0.4;
+            }
+            .attack-info {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            .attack-target {
+                font-size: 12px;
+                color: var(--text-muted);
+                letter-spacing: 0.2px;
+            }
+            .attack-line {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .sword-pip-wrap {
+                position: relative;
+                display: inline-flex;
+                flex-shrink: 0;
+            }
+            .sword-pip-sm {
+                width: 8px;
+                height: auto;
+                object-fit: contain;
+                transform: rotate(16deg);
+                filter: grayscale(1) brightness(0.5) opacity(0.5);
+                transition: filter 0.2s ease;
+            }
+            .sword-pip-sm.used {
+                filter: none;
+            }
+            .sword-pip-wrap .miss-x {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--accent);
+                font-size: 14px;
+                font-weight: 800;
+                text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+            }
+            .attack-row .card-stars {
+                display: flex;
+                gap: 1px;
+            }
+            .star-icon {
+                width: 16px;
+                height: 16px;
+            }
+            .star-icon.dim {
+                filter: grayscale(1) opacity(0.28);
+            }
+            .attack-row .card-dmg {
+                font-variant-numeric: tabular-nums;
+                font-weight: 600;
+                font-size: 12.5px;
+                color: var(--text-muted);
+                margin-left: auto;
+            }
+            .card-caption {
+                font-size: 10.5px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-weight: 600;
+            }
+            .card-caption.danger {
+                color: var(--accent);
+            }
 
-/* Slider / Member Spotlight */
-.watermark-trophy{top:4px;left:50%;transform:translateX(-50%);width:110px;opacity:.08;}
-.slider-panel{background:var(--surface-wood);}
-.slider-nav{display:flex;gap:8px;}
-.nav-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(var(--gold-rgb),0.35);background:transparent;color:var(--text);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.2s;}
-.nav-btn:hover{border-color:var(--gold);color:var(--gold);}
-.slider-card{min-height:280px;display:flex;flex-direction:column;gap:14px;transition:opacity .22s ease, transform .22s ease;}
-.slider-card.fade{opacity:0;transform:translateX(10px);}
-.slide-top{display:flex;align-items:center;justify-content:space-between;}
-.slide-name{font-size:19px;}
-.slide-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.stat-block{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,0.03);border-radius:2px;padding:10px 12px;}
-.stat-block img{width:26px;height:26px;flex-shrink:0;}
-.stat-block .num{font-size:22px;color:var(--gold);font-variant-numeric:tabular-nums;}
-.lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
-.hist-lbl{display:block;margin-bottom:6px;}
-.slider-dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;justify-content:center;}
-.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.15);cursor:pointer;transition:.2s;}
-.dot.active{background:var(--gold);width:18px;border-radius:4px;}
+            /* Slider / Member Spotlight */
+            .watermark-trophy {
+                top: 4px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 110px;
+                opacity: 0.08;
+            }
+            .slider-panel {
+                background: var(--surface-wood);
+            }
+            .slider-nav {
+                display: flex;
+                gap: 8px;
+            }
+            .nav-btn {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                border: 1.5px solid rgba(var(--gold-rgb), 0.35);
+                background: transparent;
+                color: var(--text);
+                cursor: pointer;
+                font-size: 16px;
+                line-height: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.2s;
+            }
+            .nav-btn:hover {
+                border-color: var(--gold);
+                color: var(--gold);
+            }
+            .slider-card {
+                min-height: 280px;
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+                transition:
+                    opacity 0.22s ease,
+                    transform 0.22s ease;
+            }
+            .slider-card.fade {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+            .slide-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .slide-name {
+                font-size: 19px;
+            }
+            .slide-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .stat-block {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                background: rgba(255, 255, 255, 0.03);
+                border-radius: 2px;
+                padding: 10px 12px;
+            }
+            .stat-block img {
+                width: 26px;
+                height: 26px;
+                flex-shrink: 0;
+            }
+            .stat-block .num {
+                font-size: 22px;
+                color: var(--gold);
+                font-variant-numeric: tabular-nums;
+            }
+            .lbl {
+                font-size: 11px;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .hist-lbl {
+                display: block;
+                margin-bottom: 6px;
+            }
+            .spotlight-attacks {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .slider-dots {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-top: 14px;
+                justify-content: center;
+            }
+            .dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.15);
+                cursor: pointer;
+                transition: 0.2s;
+            }
+            .dot.active {
+                background: var(--gold);
+                width: 18px;
+                border-radius: 4px;
+            }
 
-/* Wall of shame */
-.shame-panel{border:1.5px solid rgba(var(--accent-rgb),0.5);}
-.shame-panel h2{color:var(--accent);}
-.watermark-jjqueen{right:-16px;bottom:-14px;width:190px;opacity:.14;}
-.shame-list{display:flex;flex-direction:column;gap:10px;}
-.shame-item{background:rgba(var(--accent-rgb),0.09);border:1px solid rgba(var(--accent-rgb),0.25);border-radius:2px;padding:12px 14px;animation:tiltIn .5s ease-out both;}
-.shame-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:10px;}
-.shame-name{display:flex;align-items:center;gap:8px;font-weight:700;}
-.shame-name img{width:22px;height:22px;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.4));}
-.shame-stat{font-size:11px;color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap;}
-.shame-roast{font-size:13.5px;color:var(--text-muted);font-style:italic;}
+            /* Wall of shame */
+            .shame-panel {
+                border: 1.5px solid rgba(var(--accent-rgb), 0.5);
+                min-height: 240px;
+            }
+            .shame-panel h2 {
+                color: var(--accent);
+            }
+            .watermark-jjqueen {
+                right: -16px;
+                bottom: -14px;
+                width: 190px;
+                opacity: 0.14;
+            }
+            .shame-list {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .shame-item {
+                background: rgba(var(--accent-rgb), 0.09);
+                border: 1px solid rgba(var(--accent-rgb), 0.25);
+                border-radius: 2px;
+                padding: 12px 14px;
+                animation: tiltIn 0.5s ease-out both;
+            }
+            .shame-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 4px;
+                gap: 10px;
+            }
+            .shame-name {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 700;
+            }
+            .shame-name img {
+                width: 22px;
+                height: 22px;
+                filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.4));
+            }
+            .shame-stat {
+                font-size: 11px;
+                color: var(--accent);
+                font-variant-numeric: tabular-nums;
+                white-space: nowrap;
+            }
+            .shame-roast {
+                font-size: 13.5px;
+                color: var(--text-muted);
+                font-style: italic;
+            }
 
-/* Ticker */
-.ticker-bar{position:fixed;left:0;right:0;bottom:0;height:68px;background:rgba(38,32,26,0.95);backdrop-filter:blur(6px);border-top:1px solid rgba(var(--gold-rgb),0.2);display:flex;align-items:center;z-index:50;}
-.ticker-track-wrap{overflow:hidden;flex:1;height:100%;position:relative;}
-.ticker-track{display:flex;align-items:center;white-space:nowrap;position:absolute;left:0;animation:marquee 70s linear infinite;}
-.ticker-item{font-size:18px;display:inline-flex;align-items:center;gap:8px;}
-.ticker-item img{width:20px;height:20px;}
-.dot-sep{color:rgba(var(--gold-rgb),0.5);margin:0 26px;}
+            /* Ticker */
+            .ticker-bar {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 68px;
+                background: rgba(38, 32, 26, 0.95);
+                backdrop-filter: blur(6px);
+                border-top: 1px solid rgba(var(--gold-rgb), 0.2);
+                display: flex;
+                align-items: center;
+                z-index: 50;
+            }
+            .ticker-track-wrap {
+                overflow: hidden;
+                flex: 1;
+                height: 100%;
+                position: relative;
+            }
+            .ticker-track {
+                display: flex;
+                align-items: center;
+                white-space: nowrap;
+                position: absolute;
+                left: 0;
+                animation: marquee 70s linear infinite;
+            }
+            .ticker-item {
+                font-size: 18px;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .ticker-item img {
+                width: 20px;
+                height: 20px;
+            }
+            .dot-sep {
+                color: rgba(var(--gold-rgb), 0.5);
+                margin: 0 26px;
+            }
 
-/* Fan content disclaimer */
-.fan-disclaimer{margin-top:24px;text-align:center;font-size:11.5px;color:var(--text-muted);line-height:1.6;}
-.fan-disclaimer a{color:var(--text-muted);text-decoration:underline;}
+            /* Fan content disclaimer */
+            .fan-disclaimer {
+                margin-top: 24px;
+                text-align: center;
+                font-size: 11.5px;
+                color: var(--text-muted);
+                line-height: 1.6;
+            }
+            .fan-disclaimer a {
+                color: var(--text-muted);
+                text-decoration: underline;
+            }
 
-@keyframes blink{50%{opacity:.55;}}
-@keyframes tiltIn{0%{opacity:0;transform:translateY(24px) rotate(-4deg);}70%{opacity:1;transform:translateY(-2px) rotate(1.5deg);}100%{opacity:1;transform:translateY(0) rotate(0);}}
-@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-33.333%);}}
+            @keyframes blink {
+                50% {
+                    opacity: 0.55;
+                }
+            }
+            @keyframes tiltIn {
+                0% {
+                    opacity: 0;
+                    transform: translateY(24px) rotate(-4deg);
+                }
+                70% {
+                    opacity: 1;
+                    transform: translateY(-2px) rotate(1.5deg);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0) rotate(0);
+                }
+            }
+            @keyframes marquee {
+                from {
+                    transform: translateX(0);
+                }
+                to {
+                    transform: translateX(-33.333%);
+                }
+            }
 
-@media (max-width:1100px){
-  .main-grid{grid-template-columns:1fr;}
-  .topbar-side{justify-content:center;}
-}
-@media (max-width:820px){
-  .clash-panel{flex-direction:column;}
-  .clash-half{clip-path:none !important;margin:0 !important;padding:24px 26px !important;flex-basis:auto !important;}
-  .clash-seam{position:static;transform:none;margin:-14px auto;}
-}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <header class="topbar">
-    <div class="topbar-side topbar-left">
-      <span class="clan-name" id="clanNameTop">PropellerPerps</span>
-    </div>
-    <div class="topbar-center">
-      <span class="war-state" id="warStateBadge">BATTLE DAY</span>
-      <span class="countdown" id="countdown">--:--:--</span>
-    </div>
-    <div class="topbar-side topbar-right">
-      <span class="clan-tag" id="clanTagTop">#2QYCRRVU8</span>
-    </div>
-  </header>
+            @media (max-width: 1100px) {
+                .main-grid {
+                    grid-template-columns: 1fr;
+                }
+                .topbar-side {
+                    justify-content: center;
+                }
+            }
+            @media (max-width: 820px) {
+                .clash-content {
+                    padding: 16px 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <header class="topbar">
+                <div class="topbar-side topbar-left">
+                    <span class="clan-name" id="clanNameTop"
+                        >PropellerPerps</span
+                    >
+                </div>
+                <div class="topbar-center">
+                    <span class="war-state" id="warStateBadge">BATTLE DAY</span>
+                    <span class="countdown" id="countdown">--:--:--</span>
+                </div>
+                <div class="topbar-side topbar-right">
+                    <span class="clan-tag" id="clanTagTop">#2QYCRRVU8</span>
+                    <span class="last-updated">
+                        <span class="last-updated-icon" aria-hidden="true">↻</span
+                        ><span id="lastUpdatedSecs">--</span>
+                    </span>
+                </div>
+            </header>
 
-  <section class="clash-panel textured" id="warSummary"></section>
+            <section class="clash-panel textured" id="warSummary"></section>
 
-  <main class="main-grid">
-    <section class="panel war-board textured">
-      <div class="panel-watermark watermark-swords" aria-hidden="true">
-        <img src="assets/coc/sword.png" alt="">
-        <img src="assets/coc/sword.png" alt="">
-      </div>
-      <div class="panel-head">
-        <h2>War Board</h2>
-        <span class="panel-sub" id="boardSub"></span>
-      </div>
-      <div class="board-grid" id="boardBody"></div>
-    </section>
+            <main class="main-grid">
+                <section class="panel war-board textured">
+                    <div
+                        class="panel-watermark watermark-swords"
+                        aria-hidden="true"
+                    >
+                        <img src="assets/coc/sword.png" alt="" />
+                        <img src="assets/coc/sword.png" alt="" />
+                    </div>
+                    <div class="panel-head">
+                        <h2>War Board</h2>
+                        <span class="panel-sub" id="boardSub"></span>
+                    </div>
+                    <div class="round-tabs" id="roundTabs"></div>
+                    <div class="board-grid" id="boardBody"></div>
+                </section>
 
-    <aside class="sidebar">
-      <section class="panel slider-panel textured">
-        <img class="panel-watermark watermark-trophy" src="assets/coc/trophy.png" alt="" aria-hidden="true">
-        <div class="panel-head">
-          <h2>Member Spotlight</h2>
-          <div class="slider-nav">
-            <button class="nav-btn" id="prevBtn" aria-label="Previous member">‹</button>
-            <button class="nav-btn" id="nextBtn" aria-label="Next member">›</button>
-          </div>
+                <aside class="sidebar">
+                    <section class="panel slider-panel textured">
+                        <img
+                            class="panel-watermark watermark-trophy"
+                            src="assets/coc/trophy.png"
+                            alt=""
+                            aria-hidden="true"
+                        />
+                        <div class="panel-head">
+                            <h2>Member Spotlight</h2>
+                            <div class="slider-nav">
+                                <button
+                                    class="nav-btn"
+                                    id="prevBtn"
+                                    aria-label="Previous member"
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    class="nav-btn"
+                                    id="nextBtn"
+                                    aria-label="Next member"
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        </div>
+                        <div class="slider-card" id="sliderCard"></div>
+                        <div class="slider-dots" id="sliderDots"></div>
+                    </section>
+
+                    <section class="panel shame-panel textured">
+                        <img
+                            class="panel-bg-art watermark-jjqueen"
+                            src="assets/coc/jjqueen.png"
+                            alt=""
+                            aria-hidden="true"
+                        />
+                        <div class="panel-head">
+                            <h2 id="shameHeading">Wall of Shame</h2>
+                        </div>
+                        <div class="shame-list" id="shameList"></div>
+                    </section>
+                </aside>
+            </main>
+
+            <footer class="fan-disclaimer">
+                This material is unofficial and is not endorsed by Supercell.
+                For more information see Supercell's Fan Content Policy:
+                <a
+                    href="https://www.supercell.com/en/fan-content-policy/"
+                    target="_blank"
+                    rel="noopener"
+                    >www.supercell.com/fan-content-policy</a
+                >. Non-Clash icons courtesy of
+                <a href="https://game-icons.net" target="_blank" rel="noopener"
+                    >game-icons.net</a
+                >
+                (CC BY 3.0).
+            </footer>
         </div>
-        <div class="slider-card" id="sliderCard"></div>
-        <div class="slider-dots" id="sliderDots"></div>
-      </section>
 
-      <section class="panel shame-panel textured">
-        <img class="panel-bg-art watermark-jjqueen" src="assets/coc/jjqueen.png" alt="" aria-hidden="true">
-        <div class="panel-head">
-          <h2 id="shameHeading">Wall of Shame</h2>
+        <div class="ticker-bar">
+            <div class="ticker-track-wrap">
+                <div class="ticker-track" id="tickerTrack"></div>
+            </div>
         </div>
-        <div class="shame-list" id="shameList"></div>
-      </section>
-    </aside>
-  </main>
 
-  <footer class="fan-disclaimer">This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: <a href="https://www.supercell.com/en/fan-content-policy/" target="_blank" rel="noopener">www.supercell.com/fan-content-policy</a>. Non-Clash icons courtesy of <a href="https://game-icons.net" target="_blank" rel="noopener">game-icons.net</a> (CC BY 3.0).</footer>
-</div>
+        <script>
+            const CLAN_NAME = "PropellerPerps";
+            const CLAN_TAG = "#2QYCRRVU8";
 
-<div class="ticker-bar">
-  <div class="ticker-track-wrap">
-    <div class="ticker-track" id="tickerTrack"></div>
-  </div>
-</div>
+            const ICONS = {
+                fire: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M162.22 21.312c-183.876 106.68 51.994 227.35-10.19 332.47C116.95 413.083 38.11 325.45 43.75 227-6.035 353.376 30.21 443.745 95.22 492.75c1.386.34 17.577.498 41.186.562-28.478-16.9-32.06-75.355 32.813-103.25l15.78-7L182.062 400c-1.356 8.34-.318 13.95 1.188 16.937 1.507 2.987 3.106 3.544 5.844 4.094 5.475 1.1 16.963-2.395 26.28-14.624 18.636-24.457 29.117-80.228-26.874-167l-4.094-6.437-13.906-19.25 23.25 9.905 5.25 1.75c80.85 25.498 135.3 58.46 174.625 112.72 21.544-22.906 38.7-56.835 43.812-91.69l3.5-27.468 13.438 23.97c25.525 45.802 30.267 104.912 11.094 156.5-14.23 38.28-42.036 72.34-84 93.5 13.623-.01 24.05.032 25.25.124 154.76-34.77 139.345-244.952-14.19-394.093.012.726 0 1.46 0 2.188 78.964 185.87-136.465 189.104-119.25 11.47-41.686 100.463-132.86-2.147-91.06-91.283zM269.093 332.25c13.51 15.806 22.35 33.086 22.78 50.812.587 24.03-9.293 47.12-24.53 66.563-14.832 18.926-34.837 34.62-56.625 43.656 33.127-.065 64.926-.16 95.217-.25l-.062-.186c30.95-18.584 47.31-38.83 53.75-57.813 6.44-18.982 3.25-37.246-5.844-53.718-15.44-27.97-49.705-47.71-84.686-49.062z"/></svg>`,
+                hourglass: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M92.656 19.188v41.5h331.72v-41.5H92.655zM119.5 79.374V433.53h22.28V79.376H119.5zm46.594 0c3.212 43.324 13.312 82.022 27.78 110.906 17.685 35.304 40.845 54.75 64.064 54.75 23.218 0 46.346-19.446 64.03-54.75 14.47-28.883 24.57-67.58 27.782-110.905H166.094zm209.156 0V433.53h22.28V79.376h-22.28zm-117.313 185.22c-23.218 0-46.378 19.415-64.062 54.717-14.835 29.614-25.098 69.562-28.03 114.22H350c-2.933-44.658-13.197-84.606-28.03-114.22-17.686-35.302-40.814-54.718-64.033-54.718zM92.657 452.218v41.467h331.718V452.22H92.655z"/></svg>`,
+                skull: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M425.344 22.22c-9.027.085-18.7 5.826-24.344 19.405-11.143 26.803-31.93 59.156-58.563 93.47a141.233 141.233 0 0 1 27.5 30.31c35.1-26.57 68.882-46.81 98.125-56.75 44.6-15.16 12.02-69.72-35.343-35.343 26.91-27.842 11.107-51.27-7.376-51.093zm-341.22.03c-18.5.378-37.604 23.962-16.343 49.875C31.523 38.635-.802 85.48 37.095 102.813c28.085 12.844 62.54 35.66 99.062 64.343 8.125-12.5 18.207-23.61 29.78-32.937-26.782-35.743-48.44-69.835-61.78-98.47-4.515-9.69-12.22-13.66-20.03-13.5zm169.5 99.688c-67.104 0-121.31 54.21-121.31 121.312 0 44.676 24.04 83.613 59.905 104.656v56.406h18.718v-47.468a120.352 120.352 0 0 0 16.093 4.78v42.688h18.69v-40.03a123.913 123.913 0 0 0 15.749 0v40.03h18.686v-42.687a120.573 120.573 0 0 0 16.094-4.78v47.467h18.688V347.97c35.92-21.03 60-60.003 60-104.72 0-67.105-54.208-121.313-121.313-121.313zm-66.874 88.218c19.88 0 36 16.12 36 36s-16.12 36-36 36-36-16.12-36-36 16.12-36 36-36zm133.563 0c19.878 0 36 16.12 36 36s-16.122 36-36 36c-19.88 0-36-16.12-36-36s16.12-36 36-36zm-66.72 52.344 29.938 48.188h-59.874l29.938-48.188zm-107.28 70.563c-40.263 32.472-78.546 58.41-109.22 72.437-37.896 17.334-5.57 64.146 30.688 30.656-30.237 36.854 21.167 69.05 36.376 36.406 15.072-32.352 40.727-71.7 72.438-112.5a140.972 140.972 0 0 1-30.28-27zm213.156 1.718a141.025 141.025 0 0 1-27.908 24.69c31.846 39.39 56.82 76.862 69.438 107.217 17.203 41.383 71.774 9.722 31.72-31.718 47.363 34.376 79.94-20.185 35.342-35.345-32.146-10.926-69.758-34.3-108.593-64.844z"/></svg>`,
+                shield: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M256 16c25 24 100 72 150 72v96c0 96-75 240-150 312-75-72-150-216-150-312V88c50 0 125-48 150-72z"/></svg>`,
+                brokenShield: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M45.906 23.625v9.344c0 102.68 10.49 205.087 41.125 288.155 30.637 83.068 82.364 147.415 163.75 169.78l2.22.626 2.22-.5C344.49 472 396.864 407.39 425.593 323.47c28.728-83.92 35.25-187.777 35.25-290.5v-9.345H45.906zM64.72 42.313h377.34c-.413 98.8-7.497 197.342-34.125 275.125-27.21 79.487-73.39 136.637-154.375 154.78-73.28-21.03-119.914-78.696-149-157.562-28.475-77.212-39.206-174.13-39.843-272.344zm18.81 18.75c.807 84.13 12.486 172.823 39.314 244.812 7.825 20.998 16.874 40.495 27.25 58.063l45.844-38.438-40.75-75.063-5.47-10.062 10.97-3.344s38.865-11.786 60.406-18.25l20.437-7.25-94.843-150.468H83.53zm160.25 0 45.782 91.5 132.407-43.157c.69-16.205 1.053-32.366 1.155-48.344H243.78zm177.157 68.343L298.031 169.47l24.908 49.78 25.875 48.72 53.28-1.845c10.245-42.834 16.03-89.664 18.844-136.72zM310.908 236.47l-30.75 10.374 67.25 145.187c17.813-23.2 31.737-51.6 42.624-83.686 2.578-7.595 4.966-15.39 7.19-23.344l-53.626 1.844-5.844.22-2.75-5.158-24.094-45.437zm-99.22 4.686c-13.133 3.972-27.346 8.262-34.625 10.47L216 323.28l3.625 6.72-5.844 4.906-53.56 44.906c24.67 35.91 55.887 61.828 94.655 73.125 30.34-6.91 55.36-21.496 76.03-42.062L211.69 241.155z"/></svg>`,
+                crossedSwords: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M19.75 14.438c59.538 112.29 142.51 202.35 232.28 292.718l3.626 3.75.063-.062c21.827 21.93 44.04 43.923 66.405 66.25-18.856 14.813-38.974 28.2-59.938 40.312l28.532 28.53 68.717-68.717c42.337 27.636 76.286 63.646 104.094 105.81l28.064-28.06c-42.47-27.493-79.74-60.206-106.03-103.876l68.936-68.938-28.53-28.53c-11.115 21.853-24.413 42.015-39.47 60.593-43.852-43.8-86.462-85.842-130.125-125.47-.224-.203-.432-.422-.656-.625C183.624 122.75 108.515 63.91 19.75 14.437zm471.875 0c-83.038 46.28-154.122 100.78-221.97 161.156l22.814 21.562 56.81-56.812 13.22 13.187-56.438 56.44 24.594 23.186c61.802-66.92 117.6-136.92 160.97-218.72zm-329.53 125.906 200.56 200.53a402.965 402.965 0 0 1-13.405 13.032L148.875 153.53l13.22-13.186zm-76.69 113.28-28.5 28.532 68.907 68.906c-26.29 43.673-63.53 76.414-106 103.907l28.063 28.06c27.807-42.164 61.758-78.174 104.094-105.81l68.718 68.717 28.53-28.53c-20.962-12.113-41.08-25.5-59.937-40.313 17.865-17.83 35.61-35.433 53.157-52.97l-24.843-25.655-55.47 55.467c-4.565-4.238-9.014-8.62-13.374-13.062l55.844-55.844-24.53-25.374c-18.28 17.856-36.602 36.06-55.158 54.594-15.068-18.587-28.38-38.758-39.5-60.625z"/></svg>`,
+            };
+            function icon(name, color) {
+                const style = color ? ` style="color:${color}"` : "";
+                return `<span class="icon"${style}>${ICONS[name]}</span>`;
+            }
 
-<script>
-const CLAN_NAME = "PropellerPerps";
-const CLAN_TAG = "#2QYCRRVU8";
+            const API_URL =
+                "https://harvard-silly-tube-lime.trycloudflare.com/api/currentwar";
+            const MAX_RETRIES = 3;
+            const RETRY_DELAY_MS = 2000;
+            const POLL_INTERVAL_MS = 5000;
+            const URGENT_MS = 6 * 3600 * 1000;
 
-const ICONS = {
-  fire: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M162.22 21.312c-183.876 106.68 51.994 227.35-10.19 332.47C116.95 413.083 38.11 325.45 43.75 227-6.035 353.376 30.21 443.745 95.22 492.75c1.386.34 17.577.498 41.186.562-28.478-16.9-32.06-75.355 32.813-103.25l15.78-7L182.062 400c-1.356 8.34-.318 13.95 1.188 16.937 1.507 2.987 3.106 3.544 5.844 4.094 5.475 1.1 16.963-2.395 26.28-14.624 18.636-24.457 29.117-80.228-26.874-167l-4.094-6.437-13.906-19.25 23.25 9.905 5.25 1.75c80.85 25.498 135.3 58.46 174.625 112.72 21.544-22.906 38.7-56.835 43.812-91.69l3.5-27.468 13.438 23.97c25.525 45.802 30.267 104.912 11.094 156.5-14.23 38.28-42.036 72.34-84 93.5 13.623-.01 24.05.032 25.25.124 154.76-34.77 139.345-244.952-14.19-394.093.012.726 0 1.46 0 2.188 78.964 185.87-136.465 189.104-119.25 11.47-41.686 100.463-132.86-2.147-91.06-91.283zM269.093 332.25c13.51 15.806 22.35 33.086 22.78 50.812.587 24.03-9.293 47.12-24.53 66.563-14.832 18.926-34.837 34.62-56.625 43.656 33.127-.065 64.926-.16 95.217-.25l-.062-.186c30.95-18.584 47.31-38.83 53.75-57.813 6.44-18.982 3.25-37.246-5.844-53.718-15.44-27.97-49.705-47.71-84.686-49.062z"/></svg>`,
-  hourglass: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M92.656 19.188v41.5h331.72v-41.5H92.655zM119.5 79.374V433.53h22.28V79.376H119.5zm46.594 0c3.212 43.324 13.312 82.022 27.78 110.906 17.685 35.304 40.845 54.75 64.064 54.75 23.218 0 46.346-19.446 64.03-54.75 14.47-28.883 24.57-67.58 27.782-110.905H166.094zm209.156 0V433.53h22.28V79.376h-22.28zm-117.313 185.22c-23.218 0-46.378 19.415-64.062 54.717-14.835 29.614-25.098 69.562-28.03 114.22H350c-2.933-44.658-13.197-84.606-28.03-114.22-17.686-35.302-40.814-54.718-64.033-54.718zM92.657 452.218v41.467h331.718V452.22H92.655z"/></svg>`,
-  skull: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M425.344 22.22c-9.027.085-18.7 5.826-24.344 19.405-11.143 26.803-31.93 59.156-58.563 93.47a141.233 141.233 0 0 1 27.5 30.31c35.1-26.57 68.882-46.81 98.125-56.75 44.6-15.16 12.02-69.72-35.343-35.343 26.91-27.842 11.107-51.27-7.376-51.093zm-341.22.03c-18.5.378-37.604 23.962-16.343 49.875C31.523 38.635-.802 85.48 37.095 102.813c28.085 12.844 62.54 35.66 99.062 64.343 8.125-12.5 18.207-23.61 29.78-32.937-26.782-35.743-48.44-69.835-61.78-98.47-4.515-9.69-12.22-13.66-20.03-13.5zm169.5 99.688c-67.104 0-121.31 54.21-121.31 121.312 0 44.676 24.04 83.613 59.905 104.656v56.406h18.718v-47.468a120.352 120.352 0 0 0 16.093 4.78v42.688h18.69v-40.03a123.913 123.913 0 0 0 15.749 0v40.03h18.686v-42.687a120.573 120.573 0 0 0 16.094-4.78v47.467h18.688V347.97c35.92-21.03 60-60.003 60-104.72 0-67.105-54.208-121.313-121.313-121.313zm-66.874 88.218c19.88 0 36 16.12 36 36s-16.12 36-36 36-36-16.12-36-36 16.12-36 36-36zm133.563 0c19.878 0 36 16.12 36 36s-16.122 36-36 36c-19.88 0-36-16.12-36-36s16.12-36 36-36zm-66.72 52.344 29.938 48.188h-59.874l29.938-48.188zm-107.28 70.563c-40.263 32.472-78.546 58.41-109.22 72.437-37.896 17.334-5.57 64.146 30.688 30.656-30.237 36.854 21.167 69.05 36.376 36.406 15.072-32.352 40.727-71.7 72.438-112.5a140.972 140.972 0 0 1-30.28-27zm213.156 1.718a141.025 141.025 0 0 1-27.908 24.69c31.846 39.39 56.82 76.862 69.438 107.217 17.203 41.383 71.774 9.722 31.72-31.718 47.363 34.376 79.94-20.185 35.342-35.345-32.146-10.926-69.758-34.3-108.593-64.844z"/></svg>`,
-  shield: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M256 16c25 24 100 72 150 72v96c0 96-75 240-150 312-75-72-150-216-150-312V88c50 0 125-48 150-72z"/></svg>`,
-  brokenShield: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M45.906 23.625v9.344c0 102.68 10.49 205.087 41.125 288.155 30.637 83.068 82.364 147.415 163.75 169.78l2.22.626 2.22-.5C344.49 472 396.864 407.39 425.593 323.47c28.728-83.92 35.25-187.777 35.25-290.5v-9.345H45.906zM64.72 42.313h377.34c-.413 98.8-7.497 197.342-34.125 275.125-27.21 79.487-73.39 136.637-154.375 154.78-73.28-21.03-119.914-78.696-149-157.562-28.475-77.212-39.206-174.13-39.843-272.344zm18.81 18.75c.807 84.13 12.486 172.823 39.314 244.812 7.825 20.998 16.874 40.495 27.25 58.063l45.844-38.438-40.75-75.063-5.47-10.062 10.97-3.344s38.865-11.786 60.406-18.25l20.437-7.25-94.843-150.468H83.53zm160.25 0 45.782 91.5 132.407-43.157c.69-16.205 1.053-32.366 1.155-48.344H243.78zm177.157 68.343L298.031 169.47l24.908 49.78 25.875 48.72 53.28-1.845c10.245-42.834 16.03-89.664 18.844-136.72zM310.908 236.47l-30.75 10.374 67.25 145.187c17.813-23.2 31.737-51.6 42.624-83.686 2.578-7.595 4.966-15.39 7.19-23.344l-53.626 1.844-5.844.22-2.75-5.158-24.094-45.437zm-99.22 4.686c-13.133 3.972-27.346 8.262-34.625 10.47L216 323.28l3.625 6.72-5.844 4.906-53.56 44.906c24.67 35.91 55.887 61.828 94.655 73.125 30.34-6.91 55.36-21.496 76.03-42.062L211.69 241.155z"/></svg>`,
-  crossedSwords: `<svg viewBox="0 0 512 512" fill="currentColor"><path d="M19.75 14.438c59.538 112.29 142.51 202.35 232.28 292.718l3.626 3.75.063-.062c21.827 21.93 44.04 43.923 66.405 66.25-18.856 14.813-38.974 28.2-59.938 40.312l28.532 28.53 68.717-68.717c42.337 27.636 76.286 63.646 104.094 105.81l28.064-28.06c-42.47-27.493-79.74-60.206-106.03-103.876l68.936-68.938-28.53-28.53c-11.115 21.853-24.413 42.015-39.47 60.593-43.852-43.8-86.462-85.842-130.125-125.47-.224-.203-.432-.422-.656-.625C183.624 122.75 108.515 63.91 19.75 14.437zm471.875 0c-83.038 46.28-154.122 100.78-221.97 161.156l22.814 21.562 56.81-56.812 13.22 13.187-56.438 56.44 24.594 23.186c61.802-66.92 117.6-136.92 160.97-218.72zm-329.53 125.906 200.56 200.53a402.965 402.965 0 0 1-13.405 13.032L148.875 153.53l13.22-13.186zm-76.69 113.28-28.5 28.532 68.907 68.906c-26.29 43.673-63.53 76.414-106 103.907l28.063 28.06c27.807-42.164 61.758-78.174 104.094-105.81l68.718 68.717 28.53-28.53c-20.962-12.113-41.08-25.5-59.937-40.313 17.865-17.83 35.61-35.433 53.157-52.97l-24.843-25.655-55.47 55.467c-4.565-4.238-9.014-8.62-13.374-13.062l55.844-55.844-24.53-25.374c-18.28 17.856-36.602 36.06-55.158 54.594-15.068-18.587-28.38-38.758-39.5-60.625z"/></svg>`
-};
-function icon(name, color){
-  const style = color ? ` style="color:${color}"` : "";
-  return `<span class="icon"${style}>${ICONS[name]}</span>`;
-}
+            // `round` is always the LIVE round (data.currentRound) - header,
+            // countdown, member spotlight, and wall of shame stay tied to it
+            // regardless of which round tab is selected. `allRounds` is the
+            // full data.rounds array (CWL only - a 1-element array of just
+            // the live war for regular wars). `selectedRoundIndex` is null
+            // to mean "follow the live round"; the round tabs set it
+            // explicitly and it persists across polls until changed again.
+            let round = null;
+            let localWarEnded = false;
+            let warType = null;
+            let allRounds = [];
+            let selectedRoundIndex = null;
 
-const API_URL = "https://harvard-silly-tube-lime.trycloudflare.com/api/currentwar";
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 2000;
-const URGENT_MS = 6 * 3600 * 1000;
+            // The round that the VS board and War Board should render -
+            // whichever round tab is selected, or the live round by default.
+            function currentDisplayedRound() {
+                if (selectedRoundIndex !== null && allRounds[selectedRoundIndex]) {
+                    return allRounds[selectedRoundIndex];
+                }
+                return round;
+            }
 
-let round = null;
-let localWarEnded = false;
+            function liveRoundIndex() {
+                if (!round) return -1;
+                return allRounds.findIndex((r) => r && r.startTime === round.startTime);
+            }
 
-function parseCoCTime(ts){
-  const m = ts.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})\.(\d{3})Z$/);
-  if (!m) return new Date(NaN);
-  const [, y, mo, d, h, mi, s, ms] = m;
-  return new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}.${ms}Z`);
-}
+            function parseCoCTime(ts) {
+                const m = ts.match(
+                    /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})\.(\d{3})Z$/,
+                );
+                if (!m) return new Date(NaN);
+                const [, y, mo, d, h, mi, s, ms] = m;
+                return new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}.${ms}Z`);
+            }
 
-function starRow(count, total){
-  total = total || 3;
-  let out = "";
-  for (let i = 0; i < total; i++) {
-    out += `<img class="star-icon ${i < count ? "" : "dim"}" src="assets/coc/star.png" alt="">`;
-  }
-  return out;
-}
+            function starRow(count, total) {
+                total = total || 3;
+                let out = "";
+                for (let i = 0; i < total; i++) {
+                    out += `<img class="star-icon ${i < count ? "" : "dim"}" src="assets/coc/star.png" alt="">`;
+                }
+                return out;
+            }
 
-function thImage(level){
-  return `assets/coc/th${level === 1 ? 2 : level}.png`;
-}
+            function thImage(level) {
+                return `assets/coc/th${level === 1 ? 2 : level}.png`;
+            }
 
-function bestAttack(m){
-  return m.attacks && m.attacks.length ? m.attacks[0] : null;
-}
+            function memberAttacks(m) {
+                return m.attacks || [];
+            }
 
-function memberStatus(m){
-  if (bestAttack(m)) return "complete";
-  return localWarEnded ? "missed" : "pending";
-}
+            function totalStars(m) {
+                return memberAttacks(m).reduce((s, a) => s + a.stars, 0);
+            }
 
-function warRankMap(){
-  const scored = round.members.map((m, idx) => {
-    const a = bestAttack(m);
-    return { idx, stars: a ? a.stars : 0, dmg: a ? a.destructionPercentage : 0 };
-  });
-  scored.sort((a, b) => b.stars - a.stars || b.dmg - a.dmg);
-  const rankMap = {};
-  scored.forEach((s, i) => { rankMap[s.idx] = i + 1; });
-  return rankMap;
-}
+            function totalDestruction(m) {
+                return memberAttacks(m).reduce(
+                    (s, a) => s + a.destructionPercentage,
+                    0,
+                );
+            }
 
-function renderHeader(){
-  document.getElementById("clanNameTop").textContent = round.clanName || CLAN_NAME;
-  document.getElementById("clanTagTop").textContent = CLAN_TAG;
-  const badge = document.getElementById("warStateBadge");
-  if (round.state === "preparation") {
-    badge.innerHTML = icon("hourglass") + " PREPARATION DAY";
-  } else if (round.state === "inWar") {
-    badge.innerHTML = icon("crossedSwords") + " BATTLE DAY";
-  } else {
-    badge.innerHTML = icon("shield") + " WAR ENDED";
-  }
-  document.getElementById("shameHeading").innerHTML = icon("skull") + " Wall of Shame";
-}
+            function memberStatus(m, attacksPerMember, warEnded) {
+                const used = memberAttacks(m).length;
+                if (used >= attacksPerMember) return "complete";
+                if (used > 0) return "partial";
+                return warEnded ? "missed" : "pending";
+            }
 
-function renderSummary(){
-  const opp = round.opponent;
-  const usStars = round.starsGained;
-  const themStars = opp.starsGained;
-  const usAttacksUsed = round.attacksCompleted;
-  const themAttacksUsed = opp.attacksCompleted;
-  const attacksTotal = round.totalAttacks;
-  const maxStars = attacksTotal * 3;
-  const usLeading = usStars >= themStars;
+            function warRankMap(displayedRound) {
+                const scored = displayedRound.members.map((m, idx) => ({
+                    idx,
+                    stars: totalStars(m),
+                    dmg: totalDestruction(m),
+                    mapPosition: m.mapPosition,
+                }));
+                scored.sort(
+                    (a, b) =>
+                        b.stars - a.stars ||
+                        b.dmg - a.dmg ||
+                        a.mapPosition - b.mapPosition,
+                );
+                const rankMap = {};
+                scored.forEach((s, i) => {
+                    rankMap[s.idx] = i + 1;
+                });
+                return rankMap;
+            }
 
-  const totalStars = usStars + themStars;
-  const rawShare = totalStars > 0 ? (usStars / totalStars) : 0.5;
-  const usPct = Math.min(68, Math.max(32, rawShare * 100)).toFixed(2);
-  const themPct = (100 - usPct).toFixed(2);
-  const tiltDeg = usLeading ? 16 : -16;
+            function renderHeader() {
+                document.getElementById("clanNameTop").textContent =
+                    round.clanName || CLAN_NAME;
+                document.getElementById("clanTagTop").textContent = CLAN_TAG;
+                const badge = document.getElementById("warStateBadge");
+                if (round.state === "preparation") {
+                    badge.innerHTML = icon("hourglass") + " PREPARATION DAY";
+                } else if (round.state === "inWar") {
+                    badge.innerHTML = icon("crossedSwords") + " BATTLE DAY";
+                } else {
+                    badge.innerHTML = icon("shield") + " WAR ENDED";
+                }
+                document.getElementById("shameHeading").innerHTML =
+                    icon("skull") + " Wall of Shame";
+            }
 
-  document.getElementById("boardSub").textContent = `${usAttacksUsed}/${attacksTotal} attacks used`;
+            /* ============ TERRITORY GRID CONFIG ============ */
+            const GRID_TILE = 26; // target tile pitch (px) - actual COLS/ROWS
+            // derive from the panel's real rendered size, not a fixed canvas.
+            const GRID_GAP = 3;
+            const GRID_FLIP_MS = 320;
+            const GRID_STAGGER = 55;
+            const GRID_JITTER = 45;
+            const GRID_ROW_JAG = 1.6;
+            const GRID_TINT_MS = 900;
+            const GRID_T_MIN = 0.04;
+            const GRID_T_MAX = 0.96;
+            const GRID_GROUT = "#201f1d"; // --bg
+            const GRID_ACCENT = "#f0b400"; // --gold
+            const GRID_FILL_US = "#56481e"; // pre-composited match for the old
+            const GRID_FILL_THEM = "#482724"; // .leading tints (see history)
+            /* ================================================ */
 
-  document.getElementById("warSummary").innerHTML = `
-    <div class="clash-half us ${usLeading ? "leading" : ""}" style="flex-basis:${usPct}%">
-      <div class="team-name">${round.clanName} ${usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
-      <div class="team-stars">${usStars}<img src="assets/coc/star.png" alt="star"><small>/${maxStars}</small></div>
-      <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${round.totalDestructionPercentage.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${usAttacksUsed}/${attacksTotal}</span></div>
-    </div>
-    <div class="clash-seam" style="left:${usPct}%">
-      <img class="seam-sword" src="assets/coc/sword.png" alt="" style="transform:translate(calc(-50% - 26px), -50%) rotate(${tiltDeg}deg)">
-      <div class="vs-mark"><span class="vs-v">V</span><span class="vs-s">S</span></div>
-    </div>
-    <div class="clash-half them ${!usLeading ? "leading" : ""}" style="flex-basis:${themPct}%">
-      <div class="team-name">${opp.name} ${!usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
-      <div class="team-stars">${themStars}<img src="assets/coc/star.png" alt="star"><small>/${maxStars}</small></div>
-      <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${opp.totalDestructionPercentage.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${themAttacksUsed}/${attacksTotal}</span></div>
-    </div>`;
-}
+            let gridCanvas = null;
+            let gridCtx = null;
+            let gridCols = 0;
+            let gridRows = 0;
+            let gridOx = 0;
+            let gridOy = 0;
+            let gridRowJag = [];
+            let gridTiles = [];
+            let gridPrevFrontier = [];
+            let gridRafId = null;
+            let gridLastFrameTime = 0;
+            let gridStarsUs = 0;
+            let gridStarsThem = 0;
+            let gridMaxStars = 1;
+            // Identity (startTime) of whichever round the grid is currently
+            // showing. null means "nothing shown yet" - used to tell a poll
+            // refreshing the SAME round (cascade the tiles that changed)
+            // apart from switching to a DIFFERENT round via a tab (snap
+            // straight to the correct state, since that isn't a star change).
+            let gridRoundKey = null;
+            let gridResizeObserver = null;
+            let gridReducedMotion = window.matchMedia(
+                "(prefers-reduced-motion: reduce)",
+            ).matches;
+            window
+                .matchMedia("(prefers-reduced-motion: reduce)")
+                .addEventListener("change", (e) => {
+                    gridReducedMotion = e.matches;
+                });
 
-function renderBoard(){
-  const rankMap = warRankMap();
-  const order = round.members.map((_, i) => i).sort((a, b) => rankMap[a] - rankMap[b]);
-  document.getElementById("boardBody").innerHTML = order.map(i => {
-    const m = round.members[i];
-    const rank = rankMap[i];
-    const rankHTML = rank <= 3
-      ? `<span class="card-rank top3 rank-${rank}"><img class="rank-star" src="assets/coc/star.png" alt=""><span class="rank-num">${rank}</span></span>`
-      : `<span class="card-rank">${rank}</span>`;
+            const gridClamp = (n, a, b) => Math.max(a, Math.min(b, n));
+            const gridRand = (a, b) => a + Math.random() * (b - a);
 
-    const status = memberStatus(m);
-    const attack = bestAttack(m);
-    const pipWrap = `<span class="sword-pip-wrap"><img class="sword-pip-sm ${attack ? "used" : ""}" src="assets/coc/sword.png" alt="">${status === "missed" ? '<span class="miss-x">✕</span>' : ""}</span>`;
-    const row = attack
-      ? `<div class="attack-row">${pipWrap}<div class="attack-info"><div class="attack-target">vs ${attack.defenderName} #${attack.defenderMapPosition}</div><div class="attack-line"><span class="card-stars">${starRow(attack.stars)}</span><span class="card-dmg">${attack.destructionPercentage}%</span></div></div></div>`
-      : `<div class="attack-row empty">${pipWrap}</div>`;
+            function computeFrontierT() {
+                if (gridMaxStars <= 0) return 0.5;
+                const t =
+                    0.5 +
+                    (gridStarsUs - gridStarsThem) / (2 * gridMaxStars);
+                return gridClamp(t, GRID_T_MIN, GRID_T_MAX);
+            }
 
-    return `<div class="member-card ${status}">
+            function gridFrontierCol(row, t) {
+                return gridCols * t + gridRowJag[row];
+            }
+
+            function gridVisualOwner(tile) {
+                return tile.flip ? tile.flip.to : tile.owner;
+            }
+
+            // (Re)computes grid geometry from the panel's actual rendered
+            // size. initial=true seeds tiles at a neutral 50/50 split (the
+            // load-in reveal then cascades to the real frontier via
+            // requeueTerritoryGrid); initial=false (resize) snaps tiles
+            // straight to the current correct owner - a resize isn't a star
+            // change, so it shouldn't animate.
+            function layoutTerritoryGrid(initial) {
+                const panel = document.getElementById("warSummary");
+                const displayW = panel.clientWidth;
+                const displayH = panel.clientHeight;
+                if (!displayW || !displayH) return;
+
+                gridCols = Math.max(1, Math.floor(displayW / GRID_TILE));
+                gridRows = Math.max(1, Math.floor(displayH / GRID_TILE));
+                gridOx = (displayW - gridCols * GRID_TILE) / 2;
+                gridOy = (displayH - gridRows * GRID_TILE) / 2;
+                gridRowJag = Array.from({ length: gridRows }, () =>
+                    gridRand(-GRID_ROW_JAG, GRID_ROW_JAG),
+                );
+
+                const dpr = window.devicePixelRatio || 1;
+                gridCanvas.width = displayW * dpr;
+                gridCanvas.height = displayH * dpr;
+                gridCanvas.style.width = `${displayW}px`;
+                gridCanvas.style.height = `${displayH}px`;
+                gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                const t = initial ? 0.5 : computeFrontierT();
+                gridTiles = [];
+                for (let r = 0; r < gridRows; r++) {
+                    const fc = gridFrontierCol(r, t);
+                    const row = [];
+                    for (let c = 0; c < gridCols; c++) {
+                        row.push({
+                            owner: c + 0.5 < fc ? "L" : "R",
+                            flip: null,
+                            capturedAt: -1e9,
+                        });
+                    }
+                    gridTiles.push(row);
+                }
+                gridPrevFrontier = Array.from({ length: gridRows }, (_, r) =>
+                    gridFrontierCol(r, t),
+                );
+            }
+
+            function requeueTerritoryGrid() {
+                const now = performance.now();
+                const t = computeFrontierT();
+                let queued = false;
+                for (let r = 0; r < gridRows; r++) {
+                    const fc = gridFrontierCol(r, t);
+                    for (let c = 0; c < gridCols; c++) {
+                        const tile = gridTiles[r][c];
+                        const want = c + 0.5 < fc ? "L" : "R";
+                        if (gridVisualOwner(tile) === want) continue;
+                        const dist = Math.abs(c + 0.5 - gridPrevFrontier[r]);
+                        tile.flip = {
+                            from: tile.flip ? tile.flip.to : tile.owner,
+                            to: want,
+                            startAt: now + dist * GRID_STAGGER + gridRand(0, GRID_JITTER),
+                            p: 0,
+                        };
+                        queued = true;
+                    }
+                    gridPrevFrontier[r] = fc;
+                }
+                if (queued) startTerritoryGridLoop();
+            }
+
+            function drawTerritoryGrid(now) {
+                gridCtx.fillStyle = GRID_GROUT;
+                gridCtx.fillRect(0, 0, gridCanvas.clientWidth, gridCanvas.clientHeight);
+
+                const size = GRID_TILE - GRID_GAP;
+                for (let r = 0; r < gridRows; r++) {
+                    for (let c = 0; c < gridCols; c++) {
+                        const tile = gridTiles[r][c];
+                        const cx = gridOx + c * GRID_TILE + GRID_TILE / 2;
+                        const cy = gridOy + r * GRID_TILE + GRID_TILE / 2;
+
+                        let owner = tile.owner;
+                        let wScale = 1;
+                        if (tile.flip && now >= tile.flip.startAt) {
+                            if (gridReducedMotion) {
+                                owner = tile.flip.to;
+                            } else {
+                                owner = tile.flip.p < 0.5 ? tile.flip.from : tile.flip.to;
+                                wScale = Math.abs(Math.cos(Math.PI * tile.flip.p));
+                            }
+                        } else if (tile.flip) {
+                            owner = tile.flip.from;
+                        }
+
+                        const w = size * Math.max(0.05, wScale);
+                        gridCtx.fillStyle = owner === "L" ? GRID_FILL_US : GRID_FILL_THEM;
+                        gridCtx.fillRect(cx - w / 2, cy - size / 2, w, size);
+
+                        const age = now - tile.capturedAt;
+                        if (age < GRID_TINT_MS) {
+                            gridCtx.globalAlpha = (1 - age / GRID_TINT_MS) * 0.4;
+                            gridCtx.fillStyle = GRID_ACCENT;
+                            gridCtx.fillRect(cx - w / 2, cy - size / 2, w, size);
+                            gridCtx.globalAlpha = 1;
+                        }
+                        if (
+                            !gridReducedMotion &&
+                            tile.flip &&
+                            now >= tile.flip.startAt &&
+                            tile.flip.p > 0.45
+                        ) {
+                            gridCtx.globalAlpha = 0.8;
+                            gridCtx.strokeStyle = GRID_ACCENT;
+                            gridCtx.lineWidth = 1.5;
+                            gridCtx.strokeRect(cx - w / 2, cy - size / 2, w, size);
+                            gridCtx.globalAlpha = 1;
+                        }
+                    }
+                }
+            }
+
+            function territoryGridStillAnimating(now) {
+                for (let r = 0; r < gridRows; r++) {
+                    for (let c = 0; c < gridCols; c++) {
+                        const tile = gridTiles[r][c];
+                        if (tile.flip) return true;
+                        if (now - tile.capturedAt < GRID_TINT_MS) return true;
+                    }
+                }
+                return false;
+            }
+
+            function territoryGridFrame(now) {
+                const dt = gridLastFrameTime
+                    ? Math.min(50, now - gridLastFrameTime)
+                    : 16;
+                gridLastFrameTime = now;
+
+                for (let r = 0; r < gridRows; r++) {
+                    for (let c = 0; c < gridCols; c++) {
+                        const tile = gridTiles[r][c];
+                        if (!tile.flip || now < tile.flip.startAt) continue;
+                        if (gridReducedMotion) {
+                            tile.owner = tile.flip.to;
+                            tile.capturedAt = now;
+                            tile.flip = null;
+                            continue;
+                        }
+                        tile.flip.p += dt / GRID_FLIP_MS;
+                        if (tile.flip.p >= 1) {
+                            tile.owner = tile.flip.to;
+                            tile.capturedAt = now;
+                            tile.flip = null;
+                        }
+                    }
+                }
+
+                drawTerritoryGrid(now);
+                if (territoryGridStillAnimating(now)) {
+                    gridRafId = requestAnimationFrame(territoryGridFrame);
+                } else {
+                    gridRafId = null;
+                    gridLastFrameTime = 0;
+                }
+            }
+
+            function startTerritoryGridLoop() {
+                if (gridRafId) return;
+                gridRafId = requestAnimationFrame(territoryGridFrame);
+            }
+
+            function initTerritoryGrid() {
+                gridCanvas = document.getElementById("territoryCanvas");
+                gridCtx = gridCanvas.getContext("2d");
+                layoutTerritoryGrid(true);
+                drawTerritoryGrid(performance.now());
+
+                // If a round disappears (renderEmptyState wipes the canvas)
+                // and later reappears via polling, this runs again - drop
+                // the old observer first so they don't accumulate.
+                if (gridResizeObserver) gridResizeObserver.disconnect();
+
+                // ResizeObserver fires once immediately on observe() with the
+                // current size - skip that first call (layout above already
+                // covers it) so it can't stomp the neutral-seed-then-requeue
+                // reveal animation that's about to be queued right after this
+                // function returns.
+                let firstResizeCallback = true;
+                gridResizeObserver = new ResizeObserver(() => {
+                    if (firstResizeCallback) {
+                        firstResizeCallback = false;
+                        return;
+                    }
+                    layoutTerritoryGrid(false);
+                    drawTerritoryGrid(performance.now());
+                });
+                gridResizeObserver.observe(document.getElementById("warSummary"));
+            }
+
+            function updateTerritoryGridForRound(displayedRound) {
+                const key = displayedRound.startTime;
+                gridStarsUs = displayedRound.starsGained;
+                gridStarsThem = displayedRound.opponent.starsGained;
+                gridMaxStars = displayedRound.totalAttacks * 3;
+
+                if (gridRoundKey === null) {
+                    // Very first time the grid has ever shown data - tiles
+                    // were seeded neutral (50/50) during initTerritoryGrid;
+                    // requeue cascades them out to the real split as a
+                    // one-time reveal.
+                    gridRoundKey = key;
+                    requeueTerritoryGrid();
+                    return;
+                }
+
+                if (key !== gridRoundKey) {
+                    // Different round now being viewed (tab switch, or the
+                    // live round itself advanced to a new war) - snap
+                    // straight to the correct state. This isn't "stars
+                    // changed," it's "different data is being viewed."
+                    gridRoundKey = key;
+                    layoutTerritoryGrid(false);
+                    drawTerritoryGrid(performance.now());
+                    return;
+                }
+
+                // Same round, fresh poll data for it - cascade only the
+                // tiles whose owner actually changed.
+                requeueTerritoryGrid();
+            }
+
+            // Canvas is created once and never torn down by innerHTML
+            // replacement, so its rendering context/animation state survive
+            // any future re-renders (e.g. once polling lands).
+            function ensureWarSummaryStructure() {
+                if (document.getElementById("territoryCanvas")) return;
+                document.getElementById("warSummary").innerHTML = `
+    <canvas class="territory-canvas" id="territoryCanvas"></canvas>
+    <div class="clash-content us" id="clashContentUs"></div>
+    <div class="clash-content them" id="clashContentThem"></div>`;
+                initTerritoryGrid();
+            }
+
+            function renderSummary() {
+                ensureWarSummaryStructure();
+                const displayedRound = currentDisplayedRound();
+                const canvasEl = document.getElementById("territoryCanvas");
+
+                if (!displayedRound || displayedRound.state === "notStarted") {
+                    canvasEl.classList.add("dimmed");
+                    document.getElementById("clashContentUs").innerHTML =
+                        `<div class="empty-state">War has not started</div>`;
+                    document.getElementById("clashContentThem").innerHTML = "";
+                    document.getElementById("boardSub").textContent = "";
+                    return;
+                }
+                canvasEl.classList.remove("dimmed");
+
+                const opp = displayedRound.opponent;
+                const usStars = displayedRound.starsGained;
+                const themStars = opp.starsGained;
+                const usAttacksUsed = displayedRound.attacksCompleted;
+                const themAttacksUsed = opp.attacksCompleted;
+                const attacksTotal = displayedRound.totalAttacks;
+                const maxStars = attacksTotal * 3;
+                const usLeading = usStars >= themStars;
+
+                document.getElementById("boardSub").textContent =
+                    `${usAttacksUsed}/${attacksTotal} attacks used`;
+
+                document.getElementById("clashContentUs").innerHTML = `
+    <div class="team-name">${displayedRound.clanName} ${usLeading ? '<span class="tag">LEADING</span>' : ""}</div>
+    <div class="team-stars">${usStars}<img src="assets/coc/star.png" alt="star"><small>/${maxStars}</small></div>
+    <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${displayedRound.totalDestructionPercentage.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${usAttacksUsed}/${attacksTotal}</span></div>`;
+
+                document.getElementById("clashContentThem").innerHTML = `
+    <div class="team-name">${!usLeading ? '<span class="tag">LEADING</span>' : ""} ${opp.name}</div>
+    <div class="team-stars">${themStars}<img src="assets/coc/star.png" alt="star"><small>/${maxStars}</small></div>
+    <div class="team-meta"><span><img src="assets/coc/th-destruction.png" alt="destruction">${opp.totalDestructionPercentage.toFixed(1)}%</span><span><img src="assets/coc/sword.png" alt="attacks">${themAttacksUsed}/${attacksTotal}</span></div>`;
+
+                updateTerritoryGridForRound(displayedRound);
+            }
+
+            function renderBoard() {
+                const displayedRound = currentDisplayedRound();
+                if (!displayedRound || displayedRound.state === "notStarted") {
+                    document.getElementById("boardBody").innerHTML =
+                        `<div class="empty-state">War has not started</div>`;
+                    return;
+                }
+
+                const attacksPerMember = displayedRound.attacksPerMember;
+                const warEnded = displayedRound.state === "warEnded";
+                const rankMap = warRankMap(displayedRound);
+                const order = displayedRound.members
+                    .map((_, i) => i)
+                    .sort((a, b) => rankMap[a] - rankMap[b]);
+                document.getElementById("boardBody").innerHTML = order
+                    .map((i) => {
+                        const m = displayedRound.members[i];
+                        const rank = rankMap[i];
+                        const rankHTML =
+                            rank <= 3
+                                ? `<span class="card-rank top3 rank-${rank}"><img class="rank-star" src="assets/coc/star.png" alt=""><span class="rank-num">${rank}</span></span>`
+                                : `<span class="card-rank">${rank}</span>`;
+
+                        const status = memberStatus(m, attacksPerMember, warEnded);
+                        const attacks = memberAttacks(m);
+                        const rows = Array.from(
+                            { length: attacksPerMember },
+                            (_, slot) => {
+                                const attack = attacks[slot];
+                                const missed = !attack && warEnded;
+                                const pipWrap = `<span class="sword-pip-wrap"><img class="sword-pip-sm ${attack ? "used" : ""}" src="assets/coc/sword.png" alt="">${missed ? '<span class="miss-x">✕</span>' : ""}</span>`;
+                                return attack
+                                    ? `<div class="attack-row">${pipWrap}<div class="attack-info"><div class="attack-target">vs ${attack.defenderName} #${attack.defenderMapPosition}</div><div class="attack-line"><span class="card-stars">${starRow(attack.stars)}</span><span class="card-dmg">${attack.destructionPercentage}%</span></div></div></div>`
+                                    : `<div class="attack-row empty">${pipWrap}</div>`;
+                            },
+                        ).join("");
+
+                        return `<div class="member-card ${status}">
       ${rankHTML}
       <div class="card-top">
         <img class="card-th" src="${thImage(m.townhallLevel)}" width="46" height="46" alt="TH${m.townhallLevel}">
         <span class="card-name">${m.name}</span>
       </div>
-      <div class="attack-rows">${row}</div>
+      <div class="attack-rows">${rows}</div>
     </div>`;
-  }).join("");
-}
+                    })
+                    .join("");
+            }
 
-let sliderIndex = 0;
-let sliderTimer = null;
+            function roundIcon(r) {
+                if (!r || r.state === "notStarted") return "hourglass";
+                if (r.state === "inWar" || r.state === "preparation") {
+                    return "crossedSwords";
+                }
+                // warEnded - more stars wins; destruction is the tiebreaker.
+                const won =
+                    r.starsGained > r.opponent.starsGained ||
+                    (r.starsGained === r.opponent.starsGained &&
+                        r.totalDestructionPercentage >=
+                            r.opponent.totalDestructionPercentage);
+                return won ? "trophy" : "brokenShield";
+            }
 
-function spotlightHTML(m){
-  const attack = bestAttack(m);
-  const detail = attack
-    ? `<div class="slide-stats">
-        <div class="stat-block"><img src="assets/coc/star.png" alt=""><span class="num">${attack.stars}</span></div>
-        <div class="stat-block"><img src="assets/coc/destruction.png" alt=""><span class="num">${attack.destructionPercentage}%</span></div>
+            // CWL only - one tab per round in the league group, letting you
+            // browse any of the 7 wars. War Board + VS board switch to the
+            // selected round; header/countdown/Member Spotlight/Wall of
+            // Shame stay tied to the live round regardless.
+            function renderRoundTabs() {
+                const container = document.getElementById("roundTabs");
+                if (warType !== "cwl" || !allRounds.length) {
+                    container.innerHTML = "";
+                    container.style.display = "none";
+                    return;
+                }
+                container.style.display = "";
+                const activeIndex =
+                    selectedRoundIndex !== null
+                        ? selectedRoundIndex
+                        : liveRoundIndex();
+                container.innerHTML = allRounds
+                    .map((r, i) => {
+                        const activeClass = i === activeIndex ? "active" : "";
+                        return `<button class="round-tab ${activeClass}" data-i="${i}">${icon(roundIcon(r))}<span>Round ${i + 1}</span></button>`;
+                    })
+                    .join("");
+                container.querySelectorAll(".round-tab").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        selectedRoundIndex = parseInt(btn.dataset.i, 10);
+                        renderRoundTabs();
+                        renderSummary();
+                        renderBoard();
+                    });
+                });
+            }
+
+            let sliderIndex = 0;
+            let sliderTimer = null;
+
+            function spotlightHTML(m) {
+                const attacks = memberAttacks(m);
+                let detail;
+                if (attacks.length) {
+                    const stars = totalStars(m);
+                    const avgDestruction = Math.round(
+                        attacks.reduce((s, a) => s + a.destructionPercentage, 0) /
+                            attacks.length,
+                    );
+                    const attackLines = attacks
+                        .map(
+                            (a) =>
+                                `<div class="attack-line"><span class="attack-target">vs ${a.defenderName} #${a.defenderMapPosition}</span><span class="card-stars">${starRow(a.stars)}</span><span class="card-dmg">${a.destructionPercentage}%</span></div>`,
+                        )
+                        .join("");
+                    detail = `<div class="slide-stats">
+        <div class="stat-block"><img src="assets/coc/star.png" alt=""><span class="num">${stars}</span></div>
+        <div class="stat-block"><img src="assets/coc/destruction.png" alt=""><span class="num">${avgDestruction}%</span></div>
       </div>
-      <div><span class="lbl hist-lbl">This Round's Attack</span><span class="lbl">vs ${attack.defenderName} #${attack.defenderMapPosition}</span></div>`
-    : `<div class="lbl hist-lbl">${localWarEnded ? "No attack made this round" : "Hasn't attacked yet"}</div>`;
+      <div><span class="lbl hist-lbl">This Round's Attacks</span><div class="spotlight-attacks">${attackLines}</div></div>`;
+                } else {
+                    detail = `<div class="lbl hist-lbl">${localWarEnded ? "No attacks made this round" : "Hasn't attacked yet"}</div>`;
+                }
 
-  return `
+                return `
     <div class="slide-top">
       <span class="slide-name">${m.name}</span>
       <img class="card-th" src="${thImage(m.townhallLevel)}" width="40" height="40" alt="TH${m.townhallLevel}">
     </div>
     ${detail}`;
-}
+            }
 
-function renderSlide(i, skipFade){
-  sliderIndex = (i + round.members.length) % round.members.length;
-  const card = document.getElementById("sliderCard");
-  const fill = () => {
-    card.innerHTML = spotlightHTML(round.members[sliderIndex]);
-    card.classList.remove("fade");
-    updateDots();
-  };
-  if (skipFade) { fill(); return; }
-  card.classList.add("fade");
-  setTimeout(fill, 220);
-}
+            function renderSlide(i, skipFade) {
+                sliderIndex = (i + round.members.length) % round.members.length;
+                const card = document.getElementById("sliderCard");
+                const fill = () => {
+                    card.innerHTML = spotlightHTML(round.members[sliderIndex]);
+                    card.classList.remove("fade");
+                    updateDots();
+                };
+                if (skipFade) {
+                    fill();
+                    return;
+                }
+                card.classList.add("fade");
+                setTimeout(fill, 220);
+            }
 
-function nextSlide(){ renderSlide(sliderIndex + 1); }
-function prevSlide(){ renderSlide(sliderIndex - 1); }
+            function nextSlide() {
+                renderSlide(sliderIndex + 1);
+            }
+            function prevSlide() {
+                renderSlide(sliderIndex - 1);
+            }
 
-function renderDotsShell(){
-  const dots = document.getElementById("sliderDots");
-  dots.innerHTML = round.members.map((_, i) => `<span class="dot" data-i="${i}"></span>`).join("");
-  dots.querySelectorAll(".dot").forEach(d => {
-    d.addEventListener("click", () => { renderSlide(parseInt(d.dataset.i, 10)); resetAutoSlide(); });
-  });
-}
+            function renderDotsShell() {
+                const dots = document.getElementById("sliderDots");
+                dots.innerHTML = round.members
+                    .map((_, i) => `<span class="dot" data-i="${i}"></span>`)
+                    .join("");
+                dots.querySelectorAll(".dot").forEach((d) => {
+                    d.addEventListener("click", () => {
+                        renderSlide(parseInt(d.dataset.i, 10));
+                        resetAutoSlide();
+                    });
+                });
+            }
 
-function updateDots(){
-  document.querySelectorAll("#sliderDots .dot").forEach((d, i) => d.classList.toggle("active", i === sliderIndex));
-}
+            function updateDots() {
+                document
+                    .querySelectorAll("#sliderDots .dot")
+                    .forEach((d, i) =>
+                        d.classList.toggle("active", i === sliderIndex),
+                    );
+            }
 
-function startAutoSlide(){ sliderTimer = setInterval(nextSlide, 7000); }
-function resetAutoSlide(){ clearInterval(sliderTimer); startAutoSlide(); }
+            function startAutoSlide() {
+                sliderTimer = setInterval(nextSlide, 7000);
+            }
+            function resetAutoSlide() {
+                clearInterval(sliderTimer);
+                startAutoSlide();
+            }
 
-function renderSpotlight(){
-  renderDotsShell();
-  renderSlide(0, true);
-  startAutoSlide();
-  document.getElementById("prevBtn").addEventListener("click", () => { prevSlide(); resetAutoSlide(); });
-  document.getElementById("nextBtn").addEventListener("click", () => { nextSlide(); resetAutoSlide(); });
-}
+            // One-time setup: builds the slider, starts auto-advance, and
+            // attaches the nav button listeners. prevBtn/nextBtn are static
+            // elements that persist across polls - wiring listeners here
+            // (once) instead of on every refresh avoids stacking duplicate
+            // handlers each time new data comes in.
+            function renderSpotlight() {
+                renderDotsShell();
+                renderSlide(0, true);
+                startAutoSlide();
+                document
+                    .getElementById("prevBtn")
+                    .addEventListener("click", () => {
+                        prevSlide();
+                        resetAutoSlide();
+                    });
+                document
+                    .getElementById("nextBtn")
+                    .addEventListener("click", () => {
+                        nextSlide();
+                        resetAutoSlide();
+                    });
+            }
 
-function renderShame(){
-  // No real shame-worthy data source yet (v1 scope cut) - stays empty.
-  document.getElementById("shameList").innerHTML = "";
-}
+            // Poll-triggered refresh: redraws the dots and whichever slide is
+            // currently showing with fresh member data, without resetting
+            // the user's position in the carousel or the auto-advance timer.
+            function refreshSpotlightData() {
+                renderDotsShell();
+                renderSlide(sliderIndex, true);
+            }
 
-function renderEmptyState(message){
-  document.getElementById("clanNameTop").textContent = CLAN_NAME;
-  document.getElementById("clanTagTop").textContent = CLAN_TAG;
-  document.getElementById("warStateBadge").innerHTML = icon("hourglass") + " NO ACTIVE ROUND";
-  document.getElementById("shameHeading").innerHTML = icon("skull") + " Wall of Shame";
-  document.getElementById("countdown").textContent = "--:--:--";
-  document.getElementById("warSummary").innerHTML = `<div class="empty-state">${message}</div>`;
-  document.getElementById("boardSub").textContent = "";
-  document.getElementById("boardBody").innerHTML = `<div class="empty-state">${message}</div>`;
-  document.getElementById("sliderCard").innerHTML = `<div class="empty-state">${message}</div>`;
-  document.getElementById("sliderDots").innerHTML = "";
-  document.getElementById("shameList").innerHTML = "";
-}
+            function renderShame() {
+                // No real shame-worthy data source yet (v1 scope cut) - stays empty.
+                document.getElementById("shameList").innerHTML = "";
+            }
 
-function updateCountdown(){
-  const target = round.state === "preparation" ? parseCoCTime(round.startTime) : parseCoCTime(round.endTime);
-  const diff = target - new Date();
-  const el = document.getElementById("countdown");
-  const clamped = Math.max(diff, 0);
-  const h = Math.floor(clamped / 3600000);
-  const mi = Math.floor((clamped % 3600000) / 60000);
-  const s = Math.floor((clamped % 60000) / 1000);
-  el.textContent = [h, mi, s].map(n => String(n).padStart(2, "0")).join(":");
-  el.classList.toggle("urgent", clamped < URGENT_MS);
-  if (clamped <= 0 && round.state === "inWar" && !localWarEnded) {
-    localWarEnded = true;
-    renderBoard();
-  }
-}
+            function renderLoadingState() {
+                document.getElementById("warStateBadge").innerHTML =
+                    icon("hourglass") + " LOADING";
+                document.getElementById("countdown").textContent = "--:--:--";
+                document.getElementById("warSummary").innerHTML =
+                    `<div class="empty-state">Loading war data…</div>`;
+                document.getElementById("boardSub").textContent = "";
+                document.getElementById("roundTabs").innerHTML = "";
+                document.getElementById("roundTabs").style.display = "none";
+                document.getElementById("boardBody").innerHTML =
+                    `<div class="empty-state">Loading war data…</div>`;
+                document.getElementById("sliderCard").innerHTML =
+                    `<div class="empty-state">Loading war data…</div>`;
+                document.getElementById("sliderDots").innerHTML = "";
+                document.getElementById("shameList").innerHTML = "";
+            }
 
-async function fetchWarData(){
-  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-    try {
-      const response = await fetch(API_URL);
-      if (response.ok) {
-        return await response.json();
-      }
-      console.error(`War data request failed (attempt ${attempt}/${MAX_RETRIES}): HTTP ${response.status}`);
-    } catch (err) {
-      console.error(`War data request errored (attempt ${attempt}/${MAX_RETRIES}):`, err);
-    }
-    if (attempt < MAX_RETRIES) {
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
-    }
-  }
-  return null;
-}
+            let lastUpdatedAt = null;
 
-async function init(){
-  const data = await fetchWarData();
-  if (!data) {
-    renderEmptyState("Couldn't reach the war room backend. Check your connection and refresh.");
-    return;
-  }
+            function markDataFreshNow() {
+                lastUpdatedAt = Date.now();
+                updateLastUpdatedDisplay();
+            }
 
-  round = data.currentRound || null;
-  if (!round) {
-    renderEmptyState("No active war round right now.");
-    return;
-  }
+            function updateLastUpdatedDisplay() {
+                const el = document.getElementById("lastUpdatedSecs");
+                if (!el) return;
+                if (lastUpdatedAt == null) {
+                    el.textContent = "--";
+                    return;
+                }
+                const secs = Math.max(
+                    0,
+                    Math.floor((Date.now() - lastUpdatedAt) / 1000),
+                );
+                el.textContent = `${secs}s`;
+            }
 
-  localWarEnded = round.state === "warEnded";
-  renderHeader();
-  renderSummary();
-  renderBoard();
-  renderSpotlight();
-  renderShame();
-  updateCountdown();
-  if (round.state !== "warEnded") {
-    setInterval(updateCountdown, 1000);
-  }
-}
+            function renderEmptyState(message) {
+                document.getElementById("clanNameTop").textContent = CLAN_NAME;
+                document.getElementById("clanTagTop").textContent = CLAN_TAG;
+                document.getElementById("warStateBadge").innerHTML =
+                    icon("hourglass") + " NO ACTIVE ROUND";
+                document.getElementById("shameHeading").innerHTML =
+                    icon("skull") + " Wall of Shame";
+                document.getElementById("countdown").textContent = "--:--:--";
+                document.getElementById("warSummary").innerHTML =
+                    `<div class="empty-state">${message}</div>`;
+                document.getElementById("boardSub").textContent = "";
+                document.getElementById("roundTabs").innerHTML = "";
+                document.getElementById("roundTabs").style.display = "none";
+                document.getElementById("boardBody").innerHTML =
+                    `<div class="empty-state">${message}</div>`;
+                document.getElementById("sliderCard").innerHTML =
+                    `<div class="empty-state">${message}</div>`;
+                document.getElementById("sliderDots").innerHTML = "";
+                document.getElementById("shameList").innerHTML = "";
+            }
 
-init();
-</script>
-</body>
+            function updateCountdown() {
+                const target =
+                    round.state === "preparation"
+                        ? parseCoCTime(round.startTime)
+                        : parseCoCTime(round.endTime);
+                const diff = target - new Date();
+                const el = document.getElementById("countdown");
+                const clamped = Math.max(diff, 0);
+                const h = Math.floor(clamped / 3600000);
+                const mi = Math.floor((clamped % 3600000) / 60000);
+                const s = Math.floor((clamped % 60000) / 1000);
+                el.textContent = [h, mi, s]
+                    .map((n) => String(n).padStart(2, "0"))
+                    .join(":");
+                el.classList.toggle("urgent", clamped < URGENT_MS);
+                if (clamped <= 0 && round.state === "inWar" && !localWarEnded) {
+                    localWarEnded = true;
+                    renderBoard();
+                }
+            }
+
+            async function fetchWarData() {
+                for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                    try {
+                        const response = await fetch(API_URL);
+                        if (response.ok) {
+                            return await response.json();
+                        }
+                        console.error(
+                            `War data request failed (attempt ${attempt}/${MAX_RETRIES}): HTTP ${response.status}`,
+                        );
+                    } catch (err) {
+                        console.error(
+                            `War data request errored (attempt ${attempt}/${MAX_RETRIES}):`,
+                            err,
+                        );
+                    }
+                    if (attempt < MAX_RETRIES) {
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, RETRY_DELAY_MS),
+                        );
+                    }
+                }
+                return null;
+            }
+
+            // Shared by both the initial load and every poll: takes a fresh
+            // /api/currentwar payload and re-renders everything that depends
+            // on it. renderSummary()'s call into updateTerritoryGridForRound()
+            // is what makes the tile-flip cascade replay on star changes -
+            // it only queues flips for tiles whose owner actually changed,
+            // so a poll with no new stars is a no-op there.
+            function applyRoundData(data) {
+                markDataFreshNow();
+                const newRound = data.currentRound || null;
+                if (!newRound) {
+                    round = null;
+                    warType = null;
+                    allRounds = [];
+                    selectedRoundIndex = null;
+                    renderEmptyState("No active war round right now.");
+                    return;
+                }
+                round = newRound;
+                warType = data.warType || null;
+                allRounds = data.rounds || [];
+                localWarEnded = round.state === "warEnded";
+                renderHeader();
+                renderRoundTabs();
+                renderSummary();
+                renderBoard();
+                refreshSpotlightData();
+                renderShame();
+            }
+
+            // Single-attempt fetch, no retry loop - a dropped poll just
+            // waits for the next scheduled cycle rather than retrying
+            // immediately, so failures can't pile up overlapping requests.
+            // Self-rescheduling via setTimeout (not setInterval) so the next
+            // poll only starts once the current one has fully finished.
+            function pollWarData() {
+                setTimeout(async () => {
+                    try {
+                        const response = await fetch(API_URL);
+                        if (response.ok) {
+                            applyRoundData(await response.json());
+                        } else {
+                            console.error(`Poll failed: HTTP ${response.status}`);
+                        }
+                    } catch (err) {
+                        console.error("Poll errored:", err);
+                    }
+                    pollWarData();
+                }, POLL_INTERVAL_MS);
+            }
+
+            async function init() {
+                renderLoadingState();
+                setInterval(updateLastUpdatedDisplay, 1000);
+
+                const data = await fetchWarData();
+                if (!data) {
+                    renderEmptyState(
+                        "Couldn't reach the war room backend. Check your connection and refresh.",
+                    );
+                    pollWarData();
+                    return;
+                }
+                markDataFreshNow();
+
+                round = data.currentRound || null;
+                if (!round) {
+                    renderEmptyState("No active war round right now.");
+                    pollWarData();
+                    return;
+                }
+                warType = data.warType || null;
+                allRounds = data.rounds || [];
+
+                localWarEnded = round.state === "warEnded";
+                renderHeader();
+                renderRoundTabs();
+                renderSummary();
+                renderBoard();
+                renderSpotlight();
+                renderShame();
+                updateCountdown();
+                // Always running now (not gated on war state) - polling can
+                // bring in a new round with a different state at any time,
+                // and this needs to already be ticking when that happens.
+                setInterval(updateCountdown, 1000);
+
+                pollWarData();
+            }
+
+            init();
+        </script>
+    </body>
 </html>
